@@ -7,5 +7,7 @@
 inst/doc
 
 # uncensored data
-data-raw/tracks/
-!data-raw/tracks/censored/*_censored.csv
+data-raw/tracks/*
+!data-raw/tracks/censored
+data-raw/tracks/censored/*
+!data-raw/tracks/censored/censored_*.csv
