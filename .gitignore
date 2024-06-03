@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
+inst/doc
+
+# uncensored data
+data-raw/tracks/
+!data-raw/tracks/censored/*_censored.csv
