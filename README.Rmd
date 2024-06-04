@@ -1,0 +1,92 @@
+---
+output: github_document
+bibliography: vignettes/references.bib
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# asds2024.nils.practical
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+This module contains the final practical part for the Certificate of Advanced Studies
+in Advanced Statistical Data Science ([CAS ASDS](https://www.unibe.ch/weiterbildungsangebote/cas_advanced_statistical_data_science/index_ger.html))
+at the [University of Berne](https://www.unibe.ch/index_eng.html) for the class of 2024.
+
+## Format
+
+The practical module has been packaged as an R package, so everything (data, scripts, reports, ...)
+should be contained in a single bundle, and analyses should be reproducible.
+
+This setup follows suggestions from [@marwick2018-peerj; @marwick2018-tas], [@mflight2014], and [@rpackages2e]
+(which provided more or less the instructions and toolchain recommendations based on which this package has been
+created).
+
+There are other opinions and tools (e.g. [@mflight2021] and [@R-targets; @targets2021]) for a lighter-weight
+reproducible research approach, which I might explore in the future.
+
+For more inspiration and available tools, see [@cran-view-rr].
+
+## Installation
+
+You can install the development version of `asds2024.nils.practical` from [GitHub](https://github.com/) with:
+
+```r
+# install.packages("devtools") # <- for `install_github` to be available uncomment this and run it (unless you've already installed it)
+
+# Notes:
+# - you probably want to install the suggested dependencies as well, since this package only uses suggested dependencies
+# - when `install_github`-ing, you need to explicitly specify that you want the vignettes built as well
+devtools::install_github(
+  "nils-s/cas-asds-practical",
+  dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"),
+  build_vignettes = TRUE)
+```
+
+Since not all documents are provided as vignettes, you probably want to clone the package sources into a local
+directory as well:
+
+```bash
+git clone https://github.com/nils-s/cas-asds-practical.git
+```
+
+From there, you can more directly explore the raw data, and read documents that are not packaged as vignettes.
+
+### Installation Troubleshooting
+
+Assuming the `devtools` package is installed (and `install_github` is available), this package by itself should
+not cause problems (simply because it contains very little stuff that could cause problems).
+However, it depends on a bunch of dependencies, which will be installed when installing this package's suggested
+dependencies as shown in the code snippet above.
+
+The main suspect in this regard is the `sf` package, which has a few dependencies of its own (not all of which
+are R packages). The first thing to try (after studying the error messages, of course) is to make sure all
+prerequisites for `sf` are fulfilled (e.g. the [GEOS](https://libgeos.org), [GDAL](https://gdal.org),
+and [PROJ](https://proj.org/) libraries).
+
+On a Fedora machine, the following should get you started:
+
+```bash
+sudo dnf install gdal gdal-devel udunits2-devel proj proj-devel geos geos-devel
+```
+
+See [the `sf` documentation](https://r-spatial.github.io/sf/) for more information.
+
+## Example
+
+```{r}
+library(asds2024.nils.practical)
+vignette("get-started", package = "asds2024.nils.practical")
+```
+
+## References

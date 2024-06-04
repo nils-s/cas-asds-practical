@@ -1,0 +1,35 @@
+Package: asds2024.nils.practical
+Title: Practical Module for CAS ASDS 2024
+Version: 0.0.0.9000
+Authors@R: 
+    person("Nils", "S.", , "28589333+nils-s@users.noreply.github.com", role = c("aut", "cre"))
+Description: Code and data for the final practical module of the CAS ASDS
+    program of 2024.  Contains data for road bike trips, and code for
+    statistical analyses of these trips.
+License: GPL (>= 2)
+Depends: 
+    R (>= 4.1.0)
+Suggests:
+    broom,
+    clock,
+    dplyr,
+    forcats,
+    ggplot2,
+    janitor,
+    knitr,
+    purrr,
+    readr,
+    rmarkdown,
+    sf,
+    stringr,
+    tibble,
+    tidyr,
+    units,
+    withr
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
