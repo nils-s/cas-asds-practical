@@ -73,12 +73,6 @@ if (perform_censoring) {
     (time < censoring_timeframe) | (time > max(time) - censoring_timeframe)
   }
 
-  # Gaussian noise with which to jitter the total distance values for the tracks,
-  # so the starting points of the tracks cannot easily be reconstructed from uncensored
-  # location points in combination with the total distance travelled up to those points.
-  # One value per track, in meters.
-  noise <- rnorm(length(original_track_files), mean = 0, sd = 100)
-
   #--- step 4: read data from files, and remove data points in the censoring region during the censoring timeframe
   censored_tracks <- original_track_files |>
     set_names(basename) |>
@@ -86,8 +80,28 @@ if (perform_censoring) {
     map(\(x) st_as_sf(x, coords = c("Latitude", "Longitude"), crs = "WGS84", remove = FALSE)) |>
     map(\(x) x |> filter(!(is_in_censoring_region(geometry) & is_during_censoring_timeframe(`TrainingTimeAbsolute [s]`))) |> st_drop_geometry())
 
-  #--- step 5: add noise to total distance values
-  censored_tracks <- map2(censored_tracks, noise, \(t, n) t |> mutate(`DistanceAbsolute [m]` = `DistanceAbsolute [m]` + n))
+  #--- step 5: censor totals (distance and time)
+
+  # find the minimum values for absolute training time and distance (per track),
+  # so we can subtract them from all data points of the corresponding tracks
+  # => should make it impossible to reconstruct starting point by looking at absolute time/distance values
+  #    of the uncensored data points
+  offsets <- censored_tracks |>
+    map(\(x) list(
+      time_offset = min(x$`TrainingTimeAbsolute [s]`),
+      dist_offset = min(x$`DistanceAbsolute [m]`)))
+
+  # subtract offsets from data points
+  # remaining imperfection: the first point of each track has a time/distance value for the last
+  # segment, but absolute time/distance value of 0 (i.e. at the first point of each track, the absolute
+  # values indicate that nothing has happened yet, while the per-segment time/distance values show that
+  # approximately 5 seconds have already passed, and some meters of distance were already travelled).
+  censored_tracks <- map2(
+    censored_tracks,
+    offsets,
+    \(t, o) t |> mutate(
+      `DistanceAbsolute [m]` = `DistanceAbsolute [m]` - o$dist_offset,
+      `TrainingTimeAbsolute [s]` = `TrainingTimeAbsolute [s]` - o$time_offset))
 
   #--- step 6: store censored data in the same format as the original files
   walk2(
