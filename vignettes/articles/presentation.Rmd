@@ -1,0 +1,426 @@
+---
+title: "Praxismodul CAS ASDS 2024"
+output: beamer_presentation
+---
+
+```{r notes_and_comments, include = FALSE}
+# output options: beamer_presentation, slidy_presentation, ioslides_presentation
+
+# ideas/TODOs:
+# - random effects model, e.g. random effect for years
+# - ?
+```
+
+
+```{r chunk_setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r package_setup, include = FALSE}
+library(asds2024.nils.practical)
+library(tidyverse)
+library(sf)
+theme_set(theme_minimal())
+library(broom)
+library(glmnet)
+library(cluster)
+library(dbscan)
+library(mclust)
+```
+
+# Data
+
+---
+
+```{r tracks_map, echo = FALSE}
+be_fr <- swiss_cantons |>
+  filter(KTNR %in% c(2,10)) # 2 = BE, 10 = FR
+be_fr_lakes <- swiss_lakes |>
+  filter(grepl("Biel|Brienz|Gruyère|Murten|Neuchâtel|Thun", GMDNAME)) # only show lakes named after these towns
+
+track_details |>
+  filter(!is.na(latitude) & !is.na(longitude)) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "WGS84") |> # EPSG 4326 = WGS-84
+  st_transform(crs = 2056) |> # EPSG 2056 = CH-1903+/LV95
+  to_linestrings() |>
+  ggplot() +
+  geom_sf(data = be_fr, fill = "#f0f0f0") +
+  geom_sf(data = be_fr_lakes, fill = "#0080ff", alpha = 0.25) +
+  geom_sf(color = "red", linewidth = 0.25, alpha = 0.2) +
+  ggtitle("Geographical Visualization of Tracks")
+```
+
+---
+
+```{r tracks_per_year, echo = FALSE}
+tracks |>
+  group_by(year = year(date)) |>
+  ggplot(aes(x = year)) +
+  geom_bar() +
+  labs(x = "Year", y = "Number of Tracks") +
+  ggtitle("Number of Tracks per Year")
+```
+
+---
+
+```{r tracks_per_month, echo = FALSE}
+tracks |>
+  group_by(month = month(date), year = year(date), .drop = FALSE) |>
+  summarize(tracks = n(), .groups = "drop") |>
+  ggplot(aes(x = month, y = tracks)) +
+  geom_jitter(
+    aes(
+      fill = cut(year, 6, labels=as.character(2018:2023), include.lowest = TRUE),
+      color = cut(year, 6, labels=as.character(2018:2023), include.lowest = TRUE),
+      shape = cut(year, 6, labels=as.character(2018:2023), include.lowest = TRUE)
+    ),
+    width = 0.2,
+    height = 0.15,
+    alpha = 0.75,
+    size = 5) +
+  scale_shape_manual(values = c(21:24, 21, 25)) +
+  labs(x = "Month", y = "Number of Tracks", fill = "Year", color = "Year", shape = "Year") +
+  ggtitle("Monthly Tracks Count by Year")
+```
+
+
+# Analyses
+
+---
+
+## A First Linear Model
+
+```{r basic_model, echo = FALSE, fig.show = "hold", out.width = "47.5%"}
+fit_minimal <- lm(speed_km_h ~ distance_km + altitude_gain_m + avg_hr_bpm, data = tracks)
+plot(fit_minimal)
+```
+
+---
+
+```{r track2_map, echo = FALSE}
+track_details |>
+  filter(date == tracks[2,]$date) |>
+  filter(!is.na(latitude) & !is.na(longitude)) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "WGS84") |> # EPSG 4326 = WGS-84
+  st_transform(crs = 2056) |> # EPSG 2056 = CH-1903+/LV95
+  ggplot(aes(color = distance_absolute_m)) +
+  geom_sf(mapping = aes(color = distance_absolute_m), size = 0.5) +
+  scale_color_gradient(low = "red", high = "green") +
+  labs(color = "Distance (m)") +
+  ggtitle("Track 2: Geographical Display")
+```
+
+---
+
+```{r track2_distance, echo = FALSE}
+track_details |>
+  filter(date == tracks[2,]$date) |>
+  ggplot(aes(x = training_time_absolute_s / 100, y = distance_absolute_m / 1000)) +
+  geom_line() +
+  labs(x = "Training Time (s)", y = "Distance (km)") +
+  ggtitle("Track 2: Distance Over Time")
+```
+
+---
+
+```{r track157_map, echo = FALSE}
+track_details |>
+  filter(date == tracks[157,]$date) |>
+  filter(!is.na(latitude) & !is.na(longitude)) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "WGS84") |> # EPSG 4326 = WGS-84
+  st_transform(crs = 2056) |> # EPSG 2056 = CH-1903+/LV95
+  ggplot(aes(color = distance_absolute_m)) +
+  geom_sf(mapping = aes(color = distance_absolute_m), size = 0.5) +
+  # scale_color_gradient2(low = "blue", mid = "green", high = "red", midpoint = 40000)
+  scale_color_gradientn(
+    colors = c("red", "green", "blue", "blue"),
+    values = scales::rescale(c(30, 42000, 45000, 114000), from = range(c(34, 114000)))) +
+  labs(color = "Distance (m)") +
+  ggtitle("Track 157: Geographical Display")
+```
+
+---
+
+```{r track157_distance, echo = FALSE}
+track_details |>
+  filter(date == tracks[157,]$date) |>
+  ggplot(aes(x = training_time_absolute_s / 100, y = distance_absolute_m / 1000)) +
+  geom_line() +
+  labs(x = "Training Time (s)", y = "Distance (km)") +
+  ggtitle("Track 157: Distance Over Time")
+```
+
+---
+
+```{r distance_correction, echo = FALSE}
+corrected_track_details <- track_details |>
+  mutate(
+    correction = distance_absolute_m - lag(distance_absolute_m, default = 0) - distance_m,
+    needs_correction = (distance_absolute_m > 90000) & (date == tracks[157,]$date),
+    corrected_distance_absolute_m = ifelse(needs_correction, distance_absolute_m - max(correction), distance_absolute_m))
+
+corrected_track_details |>
+  filter(date == tracks[157,]$date) |>
+  ggplot(aes(x = training_time_absolute_s / 100, y = corrected_distance_absolute_m / 1000)) +
+  geom_line() +
+  labs(x = "Training Time (s)", y = "Distance (km)") +
+  ggtitle("Track 157: Corrected Distance Over Time")
+```
+
+---
+
+```{r track157_corrected_map, echo = FALSE}
+corrected_track_details |>
+  filter(date == tracks[157,]$date) |>
+  filter(!is.na(latitude) & !is.na(longitude)) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "WGS84") |> # EPSG 4326 = WGS-84
+  st_transform(crs = 2056) |> # EPSG 2056 = CH-1903+/LV95
+  ggplot(aes(color = distance_absolute_m)) +
+  geom_sf(mapping = aes(color = corrected_distance_absolute_m), size = 0.5) +
+  scale_color_gradient(low = "red", high = "green") +
+  labs(color = "Distanz (m)") +
+  ggtitle("Track 157 (corrected): Geographical Display")
+```
+
+---
+
+## The Same Model, 2. Attempt
+
+```{r basic_model_2nd_attempt, echo = FALSE, fig.show = "hold", out.width = "47.5%"}
+corrected_tracks <- corrected_track_details |>
+  mutate(
+    distance_absolute_m = ifelse(needs_correction, corrected_distance_absolute_m, distance_absolute_m)
+  ) |>
+  summarize_tracks()
+
+fit_corrected <- lm(speed_km_h ~ distance_km + altitude_gain_m + avg_hr_bpm, data = corrected_tracks)
+plot(fit_corrected)
+```
+
+---
+
+\begingroup
+\fontsize{5}{10}
+
+```{r basic_model_2_summary}
+summary(fit_corrected)
+```
+
+\endgroup
+
+## Temperature Effects
+
+```{r temperature_model, echo = FALSE, fig.show = "hold", out.width = "47.5%"}
+fit_temperature <- lm(speed_km_h ~ temperature_c, data = corrected_tracks)
+plot(fit_temperature)
+```
+
+---
+
+```{r temperature_data_vs_fitted, echo = FALSE}
+plot_data_vs_fitted(fit_temperature, x = temperature_c, y = speed_km_h) +
+  labs(x = "Temperature (°C)", y = "Speed (km/h)")
+```
+
+---
+
+\begingroup
+\fontsize{5}{10}
+
+```{r temperature_model_summary}
+summary(fit_temperature)
+```
+
+\endgroup
+
+## Effect of Previous Training
+
+```{r prev_training_model, echo = FALSE, fig.show = "hold", out.width = "47.5%"}
+corrected_tracks <- corrected_tracks |>
+  mutate(
+    previous_training_date = lag(date),
+    days_since_previous_training = as.numeric(difftime(date, previous_training_date, units = "days"))
+  )
+augmented_tracks <- corrected_tracks |>
+  inner_join(corrected_tracks, join_by(previous_training_date == date), suffix = c("", "_previous_training"))
+fit_pt <- lm(speed_km_h ~ distance_km + altitude_gain_m + avg_hr_bpm + days_since_previous_training + distance_km_previous_training + altitude_gain_m_previous_training, data = augmented_tracks)
+plot(fit_pt)
+```
+
+---
+
+\begingroup
+\fontsize{5}{10}
+
+```{r prev_training_model_summary}
+summary(fit_pt)
+```
+
+\endgroup
+
+## Training Effect over the Course of the Season
+
+```{r month_model, echo = FALSE, warning = FALSE, fig.show = "hold", out.width = "47.5%"}
+fit_month <- lm(speed_km_h ~ as.factor(month(date)), data = augmented_tracks)
+plot(fit_month)
+```
+
+---
+
+\begingroup
+\fontsize{5}{10}
+
+```{r month_model_summary}
+summary(fit_month)
+```
+
+\endgroup
+
+---
+
+```{r distances_by_month, echo = FALSE}
+corrected_tracks |>
+  ggplot(aes(x = as.factor(month(date)), y = distance_km)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.25, color = "#0000f0", alpha = 0.5) +
+  labs(x = "Month", y = "Distance (km)") +
+  ggtitle("Track Length by Month")
+```
+
+---
+
+```{r month_interactions_model, echo = FALSE, warning = FALSE, fig.show = "hold", out.width = "47.5%"}
+fit_month_and_more <- lm(speed_km_h ~ as.factor(month(date)) * (distance_km + avg_hr_bpm + altitude_gain_m), data = augmented_tracks)
+# plot_data_vs_fitted(fit_month_and_more, x = `month(date)`, y = speed_km_h) +
+#   labs(x = "Month", y = "Speed (km/h)")
+plot(fit_month_and_more)
+```
+
+---
+
+\begingroup
+\fontsize{5}{10}
+
+```{r month_interactions_model_summary}
+summary(fit_month_and_more)
+```
+
+\endgroup
+
+---
+
+```{r calendar_week_model, echo = FALSE}
+fit_calendar_week_and_more <- lm(speed_km_h ~ isoweek(date) * (distance_km + avg_hr_bpm + altitude_gain_m), data = augmented_tracks)
+plot_data_vs_fitted(fit_calendar_week_and_more, x = `isoweek(date)`, y = speed_km_h) +
+  labs(x = "Calendar Week", y = "Speed (km/h)")
+```
+
+---
+
+\begingroup
+\fontsize{5}{10}
+
+```{r calendar_week_model_summary}
+summary(fit_calendar_week_and_more)
+```
+
+\endgroup
+
+## Elastic Net
+
+```{r glmnet, echo = FALSE, fig.show = "hold", out.width = "47.5%"}
+numerical_track_components <- corrected_tracks |>
+  select(!date & !previous_training_date & !weekday & !samples)
+
+training_set_ratio <- 0.7
+training_set_indices <- 
+  sample(1:nrow(numerical_track_components),
+         nrow(numerical_track_components) * training_set_ratio) |>
+  sort()
+training_set <- numerical_track_components[training_set_indices,]
+test_set <- numerical_track_components[setdiff(1:nrow(numerical_track_components), training_set_indices),]
+
+# glmnet mixing param (hyperparameter; should be tuned instead of hard-coded)
+alpha <- 0.9
+
+fit_glm <- glmnet(
+  x = training_set |> na.omit() |> select(!speed_km_h),
+  y = training_set |> na.omit() |> select(speed_km_h) |> as.matrix(),
+  alpha = alpha)
+cv_glm <- cv.glmnet(
+  x = training_set |> na.omit() |> select(!speed_km_h) |> as.matrix(),
+  y = training_set |> na.omit() |> select(speed_km_h) |> as.matrix(),
+  alpha = alpha)
+plot(fit_glm, xvar = "lambda")
+plot(cv_glm)
+```
+
+## PCA: Finding What's Important...
+
+```{r pca_scree_plot, echo = FALSE}
+numerical_track_components <- corrected_tracks |>
+  mutate(weekday = as.numeric(weekday)) |>
+  select(!date & !previous_training_date & !samples)
+pca <- prcomp(~ ., data = numerical_track_components, scale = TRUE)
+pca |>
+  tidy("pcs") |> 
+  ggplot(aes(x = PC, y = percent)) +
+  geom_col() +
+  # geom_point(aes(y = cumulative), color = "#8000ff") +
+  labs(x = "PC", y = "Explained Variance")
+```
+
+---
+
+```{r pca_biplot, echo = FALSE}
+biplot(pca, scale = 0)
+```
+
+## Clustering
+
+```{r cluster_data_prep, include = FALSE}
+scaled_tracks <- corrected_tracks |>
+  mutate(weekday = as.numeric(weekday)) |>
+  select(!date & !previous_training_date & !samples) |>
+  scale() |>
+  as_tibble() |>
+  na.omit()
+```
+
+```{r cluster_gaussian_mix, echo = FALSE}
+clusters_gaussian_mix <- Mclust(scaled_tracks)
+# plot(clusters_gaussian_mix, what = "classification")
+
+scaled_tracks |>
+  add_column(cluster = factor(clusters_gaussian_mix$classification)) |>
+  ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
+  geom_point() +
+  labs(x = "Distance (km)", y = "Speed (km/h)", color = "Cluster") +
+  ggtitle("Gaussian Mixture Model Clustering")
+```
+
+---
+
+```{r cluster_dbscan, echo = FALSE}
+# kNNdistplot(scaled_tracks, k = 1)
+# abline(h = 2.1, col = "red")
+
+clusters_db <- dbscan(scaled_tracks, eps = 2.1, minPts = 2)
+
+scaled_tracks |>
+  add_column(cluster = factor(clusters_db$cluster)) |>
+  ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
+  geom_point() +
+  labs(x = "Distance (km)", y = "Speed (km/h)", color = "Cluster") +
+  ggtitle("Density-Based Spatial Clustering")
+```
+
+---
+
+**Ideas for more things to do?**
+
