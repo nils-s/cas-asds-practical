@@ -17,6 +17,7 @@ Suggests:
     dplyr,
     forcats,
     ggplot2,
+    ggspatial,
     glmnet,
     janitor,
     knitr,

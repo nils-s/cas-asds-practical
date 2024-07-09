@@ -8,6 +8,9 @@ output: beamer_presentation
 
 # ideas/TODOs:
 # - random effects model, e.g. random effect for years
+# - add cluster information to data (manually, or via one of the algorithms in the last part), model with that
+# - (manually?) classify tracks
+# - dynamic time warping
 # - ?
 ```
 
@@ -25,6 +28,7 @@ knitr::opts_chunk$set(
 library(asds2024.nils.practical)
 library(tidyverse)
 library(sf)
+library(ggspatial)
 theme_set(theme_minimal())
 library(broom)
 library(glmnet)
@@ -52,7 +56,13 @@ track_details |>
   geom_sf(data = be_fr, fill = "#f0f0f0") +
   geom_sf(data = be_fr_lakes, fill = "#0080ff", alpha = 0.25) +
   geom_sf(color = "red", linewidth = 0.25, alpha = 0.2) +
-  ggtitle("Geographical Visualization of Tracks")
+  ggtitle("Geographical Visualization of Tracks") +
+  annotation_scale(location = "bl", width_hint = 0.2) +
+  annotation_north_arrow(
+    location = "bl",
+    pad_y = unit(1, "cm"),
+    style = north_arrow_nautical,
+    which_north = "true")
 ```
 
 ---
@@ -400,7 +410,7 @@ scaled_tracks |>
   add_column(cluster = factor(clusters_gaussian_mix$classification)) |>
   ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
   geom_point() +
-  labs(x = "Distance (km)", y = "Speed (km/h)", color = "Cluster") +
+  labs(x = "Standardized Distance", y = "Standardized Speed", color = "Cluster") +
   ggtitle("Gaussian Mixture Model Clustering")
 ```
 
@@ -416,7 +426,7 @@ scaled_tracks |>
   add_column(cluster = factor(clusters_db$cluster)) |>
   ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
   geom_point() +
-  labs(x = "Distance (km)", y = "Speed (km/h)", color = "Cluster") +
+  labs(x = "Standardized Distance", y = "Standardized Speed", color = "Cluster") +
   ggtitle("Density-Based Spatial Clustering")
 ```
 
