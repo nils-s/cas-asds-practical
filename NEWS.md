@@ -1,5 +1,7 @@
 # asds2024.nils.practical (development version)
 
+* pkgdown site
+
 # asds2024.nils.practical 0.2.0
 
 Version of the package as handed in for the final homework assignment

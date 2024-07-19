@@ -5,6 +5,6 @@ bibentry(
   title    = "CAS ASDS Practical Project: Exploratory Analysis of Road Bike Trip Data",
   author   = person("Nils", "S.", role = c("aut", "cre")),
   year     = 2024,
-  note     = "R package version 0.2.0",
+  note     = "R package version 0.2.0.9000",
   url      = "https://github.com/nils-s/cas-asds-practical"
 )

@@ -1,0 +1,21 @@
+url: https://nils-s.github.io/cas-asds-practical/
+template:
+  bootstrap: 5
+
+navbar:
+  components:
+    intro:
+      text: Get started
+      href: articles/get-started.html
+    articles:
+      text: Articles
+      menu:
+        - text: Data
+          href: articles/data.html
+        - text: Analyses
+          href: articles/analyses.html
+        - text: -------
+        - text: Mid-Term Presentation
+          href: articles/presentation.html
+        - text: Final Report
+          href: articles/article.html
