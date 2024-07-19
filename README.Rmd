@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 # asds2024.nils.practical
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/nils-s/cas-asds-practical/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nils-s/cas-asds-practical/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This module contains the final practical part for the Certificate of Advanced Studies

@@ -4,6 +4,8 @@
 # asds2024.nils.practical
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/nils-s/cas-asds-practical/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nils-s/cas-asds-practical/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This module contains the final practical part for the Certificate of
@@ -86,6 +88,7 @@ information.
 ``` r
 library(asds2024.nils.practical)
 vignette("get-started", package = "asds2024.nils.practical")
+#> Warning: Vignette 'get-started' nicht gefunden
 ```
 
 ## References
