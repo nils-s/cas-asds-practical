@@ -1,0 +1,118 @@
+---
+title: "Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette describes the data included in the package, how it was prepared, and why it was prepared in the way it was.
+It does not describe the final form of the data as it is included in the package in detail (see the data description for
+that, e.g. `?tracks`), but rather how the original raw data looked, and how and why it was pre-processed to end up the
+way it is stored in the _data-raw_ folder (see package sources on [Github](https://github.com/nils-s/cas-asds-practical)).
+
+```{r package-setup}
+library(asds2024.nils.practical)
+```
+
+## Acquisition
+
+The raw data was captured using a (now discontinued) bike computer of the model
+["Sigma ROX GPS 11.0"](https://sigma.bike/product/rox-gps-11-0/), with an additional
+chest strap heart rate sensor, and a combined speed and cadence sensor (both sensors
+were bought bundled with the bike computer itself).
+
+The data was exported using the (proprietary) Sigma software, and then exported as CSV files.
+
+The data set comprises 157 trip recordings ("tracks"), each of which is a sequence
+of data points taken at a five second interval. These data points were then aggregated
+into one summarized row per track. Additionally, tracks were manually classified by
+route, and direction in which the route was driven. These three data sets are available
+in the package under the following names:
+
+- `track_details` contains the recorded data point sequences of all tracks (approx. 160k rows)
+- `tracks` contains the summarized track information, one row per track (157 rows)
+- `track_classes` contains the classification information for each track, i.e. a class ID and direction (157 rows)
+
+Tracks are identified by date, thus if, for example, summaries in `tracks` should be
+extended with class labels for each track, `tracks` can be joined with `track_classes`
+by the `date` key.
+
+For convenience, there are two additional data sets included (`swiss_cantons` and
+`swiss_lakes`), containing geographic data for the cantons and lakes of Switzerland.
+These can be used to plot a geographic frame of reference when plotting tracks.
+Since the trip routes are all within the canton of Berne, the canton data with a
+`KTNR` ("Kantonsnummer") of 10 (i.e. Berne) is probably the most useful.
+The source for the geo data is the Swiss Federal Statistical Office
+(Bundesamt für Statistik, BfS), where the raw data can be downloaded from
+[this page](https://www.bfs.admin.ch/bfs/de/home/dienstleistungen/geostat/geodaten-bundesstatistik/administrative-grenzen/generalisierte-gemeindegrenzen.assetdetail.30487000.html).
+
+## Cleaning
+
+The data available in the package is a cleaned-up version of the raw data available
+in the package sources. Cleanups performed were:
+
+- Some 0/0 GPS coordinates were set to `NA` values. These values were probably caused
+  by some sort of GPS hiccup, so to clarify that there is no real data available for
+  these points, and to prevent accidentally using the invalid coordinates for computations,
+  they were set to `NA`.
+- Some duplicate data points were removed. There were some data points in one
+  track sequence that had the same _TrainingTimeAbsolute_ values. This looked like
+  a temporary freeze of the bike computer, and there were some obviously-wrong
+  values for distance and altitude changes in those rows, so only the first of
+  those rows was kept, the others were completely removed.
+- Power zone data was removed. The raw data contained columns for power zones,
+  however, there is no power sensor installed or calibrated, so the raw data in
+  these columns is bogus. To prevent confusion, this data was not included in the
+  package data, i.e. power zone-related columns were removed.
+
+The uncleaned data is still available in the raw CSV files available in the package
+sources, and the _tracks.R_ file in the _data-raw_ folder contains the code that
+was used to perform the cleanup.
+
+## Geographic Censoring
+
+Since the detailed track data points contain GPS data, the start and end points
+of the tracks would show the exact starting points for the trips, i.e. my address.
+Therefore, data points at the start and end of a trip, and within a certain region,
+were removed. Additionally, the tracks were then adapted, so that the first point
+of the censored track has a time and distance of 0, so that deducing the true
+starting point of a track based on the censored data points is not possible
+(or at least more difficult).
+
+This approach of just cutting off parts of the track and resetting the first point
+to 0 is slightly distorting the data, but this was deemed acceptable.
+The initial idea of removing the first and last points few, but not resetting the
+time and distance of the first uncensored point and instead adding random noise
+to censor individual tracks but keeping the average track time and distance somewhat
+more intact, was not pursued further because it is a more complex approach, and
+the risk of accidentally leaking data was deemed higher.
+
+The raw data for the tracks is only available in this censored form,
+i.e. the CSV files in _data-raw/tracks/censored_ are the tracks with a trimmed start and end.
+The original, unmodified raw CSV files are not publicly available.
+The exact details of the censoring procedure can be found in the _data-raw/tracks.R_ file.
+
+## Categorizing
+
+The tracks are not all along different routes, some routes were driven multiple
+times (some much more often than others). The tracks were (manually) classified
+by their routes, with arbitrary numeric identifiers for the routes. Routes that
+were only driven once did not get their own class, thus some tracks have a route
+class of `NA`. Furthermore, one route was driven in different directions, tracks
+along that route all have the same class, but are additionally labelled
+as clockwise or counter-clockwise. All other routes were only ever driven in one
+direction, these tracks are not labelled for direction (i.e. their direction column
+contains `NA`).
+
+Classification was done visually, by plotting the tracks, storing the plots as
+image files, and then sorting them into folders. The commented code that was used
+for classification can be found in _data-raw/track_classification.R_.

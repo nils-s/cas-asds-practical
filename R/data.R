@@ -113,7 +113,7 @@
 #' \describe{
 #'   \item{date}{Date of the trip (date)}
 #'   \item{weekday}{Weekday of the trip; can be calculated from `date` using [base::weekdays()], but is included directly for convenience (factor)}
-#'   \item{distance_km}{Length of the trip in kilometers (integer)}#'
+#'   \item{distance_km}{Length of the trip in kilometers (integer)}
 #'   \item{time_min}{Trip duration in minutes (integer)}
 #'   \item{altitude_gain_m}{Cumulated total altitude gain during the trip, only counting positive gains (all trips have same start and finish points, i.e. overall gain is 0 when including negative gains)  (integer)}
 #'   \item{temperature_c}{Median temperature in °C (integer)}
@@ -128,3 +128,22 @@
 #'   \item{samples}{Number of datapoints, i.e. for a given trip, `track_details` countains `samples` rows for that trip (integer)}
 #' }
 "tracks"
+
+#' Categorized road bike trips from 2018 to 2023
+#'
+#' Tracks categorized by route and direction. Routes that were only driven in one
+#' direction have no direction information (`direction` == NA),
+#' routes that were only driven once might not have their own class (`track` == NA).
+#'
+#' Tracks are identified by `date`. Only contains track class (`track`) and
+#' direction (`direction`), for more information regarding tracks use
+#' `tracks` data, or `track_details`.
+#'
+#' @format ## `track_classes`
+#' A data frame with 157 rows and 3 columns:
+#' \describe{
+#'   \item{date}{Date of the trip (date)}
+#'   \item{track}{Classification of the track (by route taken) (integer)}
+#'   \item{direction}{Direction in which the route was driven; only available for `track` == 3 (factor)}
+#' }
+"track_classes"

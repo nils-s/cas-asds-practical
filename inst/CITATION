@@ -1,0 +1,10 @@
+citHeader("To cite asds2024.nils.practical use:")
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "CAS ASDS Practical Project: Exploratory Analysis of Road Bike Trip Data",
+  author   = person("Nils", "S.", role = c("aut", "cre")),
+  year     = 2024,
+  note     = "R package version 0.2.0",
+  url      = "https://github.com/nils-s/cas-asds-practical"
+)

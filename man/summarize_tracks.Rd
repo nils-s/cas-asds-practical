@@ -17,6 +17,7 @@ A tibble summarizing \code{tracks}, one row per date. Values (i.e. columns) are:
 \item \code{distance_km} length of the track (in kilometers)
 \item \code{time_min} duration of the track (in minutes)
 \item \code{altitude_gain_m} total altitude gained during the track (in meters), without compensating for altitude lost
+\item \code{avg_inclination} average inclination of the track, calculated as altitude gain in meters / distance in m
 \item \code{temperature_c} median temperature of the track (in degrees Celsius)
 \item \code{speed_km_h} average speed of the track (in km/h)
 \item \code{avg_hr_bpm} average heart rate for the track (in beats per minute)

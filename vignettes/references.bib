@@ -1,3 +1,39 @@
+% --- CAS lecture notes --------------------------------------------------------
+
+@misc{mvock2023,
+  author = {Michael Vock},
+  title = {Vorlesungsskript {L}ineare gemischte {M}odelle},
+  month = aug,
+  year = 2023,
+  publisher = {Institut für mathematische Statistik und Versicherungslehre, Universit{\"a}t Bern}
+}
+
+@misc{lduembgen2024,
+  author = {Lutz D{\"u}mbgen},
+  title = {Vorlesungsskript {U}n{\"u}berwachtes {L}ernen und {D}imensionsreduktion},
+  month = jan,
+  year = 2024,
+  publisher = {Institut für mathematische Statistik und Versicherungslehre, Universit{\"a}t Bern}
+}
+
+@online{nstaedler2024,
+  author = {Nicolas St{\"a}dler},
+  title = {Analysis of High-dimensional Data - Prediction and Feature Assessment},
+  year = 2024,
+  url = {https://bookdown.org/staedler_n/highdimstats/},
+  langid = {en}
+}
+
+@misc{shayoz2023,
+  author = {Stefanie Hayoz and J{\"u}rg H{\"u}sler},
+  title = {Vorlesungsskript {Z}eitreihenanalyse},
+  month = nov,
+  year = 2023,
+  publisher = {Institut für mathematische Statistik und Versicherungslehre, Universit{\"a}t Bern}
+}
+
+% --- books, websites, blog posts, ... -----------------------------------------
+
 @online{mflight2014,
   author = {Robert M Flight},
   title = {Analyses as {Packages}},
@@ -48,15 +84,6 @@
   url = {https://cran.r-project.org/view=ReproducibleResearch}
 }
 
-@manual{R-targets,
-  title = {{targets}: Dynamic Function-Oriented Make-Like Declarative Pipelines},
-  author = {William Michael Landau},
-  year = {2024},
-  note = {R package version 1.7.0,
-https://github.com/ropensci/targets},
-  url = {https://docs.ropensci.org/targets/},
-}
-
 @article{targets2021,
   title = {The {targets} {R} package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing},
   author = {William Michael Landau},
@@ -76,4 +103,62 @@ https://github.com/ropensci/targets},
   month = jul,
   edition = "2.",
   url = {https://r-pkgs.org}
+}
+
+% --- R packages ---------------------------------------------------------------
+
+@manual{R-targets,
+  title = {{targets}: Dynamic Function-Oriented Make-Like Declarative Pipelines},
+  author = {William Michael Landau},
+  year = {2024},
+  note = {{R} package version 1.7.0, https://github.com/ropensci/targets},
+  url = {https://docs.ropensci.org/targets/},
+}
+
+@manual{R-dbscan,
+  title = {dbscan: Density-Based Spatial Clustering of Applications with Noise (DBSCAN) and Related Algorithms},
+  author = {Michael Hahsler and Matthew Piekenbrock},
+  year = {2023},
+  note = {{R} package version 1.1-12},
+  url = {https://CRAN.R-project.org/package=dbscan},
+}
+
+@article{R-dtw,
+  title = {Computing and Visualizing Dynamic Time Warping Alignments in {R}: The {dtw} Package},
+  author = {Toni Giorgino},
+  journal = {Journal of Statistical Software},
+  year = {2009},
+  volume = {31},
+  number = {7},
+  pages = {1--24},
+  doi = {10.18637/jss.v031.i07},
+}
+
+@book{R-mclust,
+  title = {Model-Based Clustering, Classification, and Density Estimation Using {mclust} in {R}},
+  author = {Luca Scrucca and Chris Fraley and T. Brendan Murphy and Adrian E. Raftery},
+  publisher = {Chapman and Hall/CRC},
+  isbn = {978-1032234953},
+  doi = {10.1201/9781003277965},
+  year = {2023},
+  url = {https://mclust-org.github.io/book/},
+}
+
+@manual{R-nlme,
+  title = {nlme: Linear and Nonlinear Mixed Effects Models},
+  author = {José Pinheiro and Douglas Bates and {R Core Team}},
+  year = {2023},
+  note = {{R} package version 3.1-164},
+  url = {https://CRAN.R-project.org/package=nlme},
+}
+
+@article{R-glmnet,
+  title = {Elastic Net Regularization Paths for All Generalized Linear Models},
+  author = {J. Kenneth Tay and Balasubramanian Narasimhan and Trevor Hastie},
+  journal = {Journal of Statistical Software},
+  year = {2023},
+  volume = {106},
+  number = {1},
+  pages = {1--31},
+  doi = {10.18637/jss.v106.i01},
 }

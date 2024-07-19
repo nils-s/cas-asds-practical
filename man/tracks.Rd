@@ -11,7 +11,7 @@ A data frame with 157 rows and 15 columns:
 \describe{
 \item{date}{Date of the trip (date)}
 \item{weekday}{Weekday of the trip; can be calculated from \code{date} using \code{\link[base:weekday.POSIXt]{base::weekdays()}}, but is included directly for convenience (factor)}
-\item{distance_km}{Length of the trip in kilometers (integer)}#'
+\item{distance_km}{Length of the trip in kilometers (integer)}
 \item{time_min}{Trip duration in minutes (integer)}
 \item{altitude_gain_m}{Cumulated total altitude gain during the trip, only counting positive gains (all trips have same start and finish points, i.e. overall gain is 0 when including negative gains)  (integer)}
 \item{temperature_c}{Median temperature in °C (integer)}

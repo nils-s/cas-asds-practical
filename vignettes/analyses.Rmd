@@ -1,0 +1,820 @@
+---
+title: "Data Analyses"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Analyses}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.dim = c(4, 3), # default figure size is 4 by 3 inches
+  fig.align = "center",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+Packages used for analyses, grouped by application:
+
+```{r package-setup}
+# general data wrangling
+library(tidyr)
+library(dplyr)
+library(lubridate)
+library(broom)
+
+# visualization
+library(ggplot2)
+library(sf)
+library(ggspatial)
+theme_set(theme_minimal())
+
+# linear models
+library(splines)
+
+# ElasticNet
+library(glmnet)
+
+# random and mixed-effects linear models
+library(nlme)
+
+# clustering
+library(dbscan)
+library(mclust)
+
+# dynamic time warping
+library(dtw)
+
+# data and util functions
+library(asds2024.nils.practical)
+
+# for reproducible results
+set.seed(123)
+```
+
+
+## Introduction
+
+The final module of the Certificate of Advanced Studies in Advanced Statistical Data Science (CAS ASDS)
+is a practical project. The topic of the project can be freely chosen by the students, e.g. using data from their
+work environment or from elsewhere.
+
+The data I chose for my final project is data collected from road bike trips during the years 2018 to 2023.
+Data was collected using a GPS-enabled bike computer, with complementary sensors for heart rate, cadence,
+and speed data. In total, the preprocessed data comprises approximately 160000 data points,
+collected during 157 trips. The actual number of trips during those seasons was higher, however, due to a data
+corruption in the bike computer's memory, an unknown number of trip recordings was lost.
+The following diagram shows the number of tracks for each year in the data set, suggesting that a data block
+(or data blocks) containing records for 2022 and 2023 was lost.
+
+```{r fig-tracks-per-year, fig.cap = "\\label{fig-tracks-per-year}Available trip data by year", fig.width = 2.5, fig.height = 2}
+tracks |>
+  group_by(year = year(date)) |>
+  ggplot(aes(x = year)) +
+  geom_bar() +
+  labs(x = "Year", y = "Number of Tracks")
+```
+
+The following image shows the geographic component of the available data on a map,
+with the tracks in red. Routes driven more frequently appear more saturated, rarely-driven routes appear lighter
+(e.g. the route to lake Thun only appears once in the data set).
+
+```{r fig-tracks-map, fig.cap = "Geographic track data (in red) on a map of cantons Berne and Fribourg", fig.width = 3.5}
+be_fr <- swiss_cantons |>
+  filter(KTNR %in% c(2,10)) # 2 = BE, 10 = FR
+be_fr_lakes <- swiss_lakes |>
+  filter(grepl("Biel|Brienz|Gruyère|Murten|Neuchâtel|Thun", GMDNAME)) # only show lakes named after these towns
+
+track_linestrings <- track_details |>
+  filter(!is.na(latitude) & !is.na(longitude)) |>
+  st_as_sf(coords = c("longitude", "latitude"), crs = "WGS84") |> # EPSG 4326 = WGS-84
+  st_transform(crs = 2056) |> # EPSG 2056 = CH-1903+/LV95
+  to_linestrings()
+
+track_linestrings |>
+  ggplot() +
+  geom_sf(data = be_fr, fill = "#f0f0f0", alpha = 0.5) +
+  geom_sf(data = be_fr_lakes, fill = "#0080ff", alpha = 0.25) +
+  geom_sf(color = "red", linewidth = 0.25, alpha = 0.2) +
+  annotation_scale(
+    location = "br",
+    height = unit(0.1, "cm"),
+    width_hint = 0.2) +
+  annotation_north_arrow(
+    location = "tr",
+    width = unit(1, "cm"),
+    height = unit(1, "cm"),
+    pad_x = unit(0.5, "cm"),
+    pad_y = unit(0.5, "cm"),
+    style = north_arrow_fancy_orienteering,
+    which_north = "true")
+```
+
+Since the data was not collected for the purpose of this project, i.e. it is not data from a controlled experiment,
+it is not as well-formed as would be desirable for an ideal analysis. Instead, the project is an exploratory
+analysis of available data.
+
+## Analyses
+
+The initial raw data has been pre-processed for inclusion in the package (see `vignette("TODO")`), however,
+first cursory analyses in an interactive session still showed some unexpected results. Some more cleaning
+was therefore done first.
+
+### Data Cleaning
+
+Despite the initial data cleanup, there is still invalid data for track 157,
+which seems to have been caused by some sort of GPS hiccup:
+
+```{r track157-raw}
+track_details |>
+  filter(date == tracks[157,]$date) |>
+  ggplot(aes(x = training_time_absolute_s / 100, y = distance_absolute_m / 1000)) +
+  geom_line() +
+  labs(x = "Training Time (s)", y = "Distance (km)") +
+  ggtitle("Track 157: Distance Over Time")
+```
+
+This seems easy enough to fix, though, since it appears that only the `distance_absolute_m` values
+for that track seem to have a sudden jump. Knowing the total length of that track (slightly more than
+40 km), and seeing that there seems to be only one corrupted data point (subsequent points seem to
+continue normally), the fix is simply to subtract the jump from all points with a distance > 90 km.
+Assuming the points between which the jump occurs are $p_1$ and $p_2$, the height of the jump is assumed
+to be
+$$
+\text{jump height} = d(p_2) - d(p_1) - \delta(p_2)
+$$
+(where, for a given point, $d(\cdot)$ means `distance_absolute_m`, and $\delta(\cdot)$ means `distance_m`).
+In other words, the true difference in `distance_absolute_m` between $p_1$ and $p_2$ is assumed to be
+the `distance_m` value of $p_2$ (i.e. the distance travelled during that segment). Any excess difference
+is assumed to be erroneous, and is subtracted from $p_2$ and all subsequent points.
+
+```{r data-corrections}
+corrected_track_details <- track_details |>
+  mutate(
+    correction = distance_absolute_m - lag(distance_absolute_m, default = 0) - distance_m,
+    needs_correction = (distance_absolute_m > 90000) & (date == tracks[157,]$date),
+    corrected_distance_absolute_m = ifelse(needs_correction, distance_absolute_m - max(correction), distance_absolute_m))
+
+corrected_tracks <- corrected_track_details |>
+  mutate(
+    distance_absolute_m = ifelse(needs_correction, corrected_distance_absolute_m, distance_absolute_m)
+  ) |>
+  summarize_tracks()
+```
+
+The resulting distance plot then appears correct:
+
+```{r track157-corrected}
+corrected_track_details |>
+  filter(date == tracks[157,]$date) |>
+  ggplot(aes(x = training_time_absolute_s / 100, y = corrected_distance_absolute_m / 1000)) +
+  geom_line() +
+  labs(x = "Training Time (s)", y = "Distance (km)") +
+  ggtitle("Track 157: Corrected Distance Over Time")
+```
+
+The corrected data is used for all further analyses.
+
+### Linear Models
+
+First, let's try to fit linear models using different predictors, to get an idea which predictors
+might influence the average track speed.
+
+#### Temperature Effects
+
+The first idea is to look for a temperature effect, i.e. does temperature influence the average
+speed? Intuitively, there is an optimum temperature, and lower and higher temperatures should
+result in lower performance.
+
+```{r temperature-model}
+fit_temperature <- lm(speed_km_h ~ temperature_c, data = corrected_tracks)
+summary(fit_temperature)
+```
+
+As can be seen from the model, temperature does not have a statistically significant influence
+(the p-Value is 0.8, i.e. nowhere near the 0.05 that would suggest significance). However, the
+estimated effect is very small, so there might be some very small effect that would need much more
+data to reliably detect.
+
+Another factor might be that a straight line is not well suited to describe the effect, since the
+assumed optimum temperature would mean that e.g. a quadratic function could be a better fit for the
+data.
+
+```{r temperature-model-splines}
+fit_temp_ns <- lm(speed_km_h ~ ns(temperature_c, df = 3), data = corrected_tracks)
+fit_temp_bs <- lm(speed_km_h ~ bs(temperature_c, df = 3), data = corrected_tracks)
+
+temp_pred_grid <- seq(from = 10.0, to = 32.5, by = 0.01)
+temp_pred_data <- data.frame(temperature_c = temp_pred_grid)
+fit_temp_pred <- data.frame(speed_km_h = predict(fit_temperature, temp_pred_data), temperature_c = temp_pred_grid)
+fit_temp_ns_pred <- data.frame(speed_km_h = predict(fit_temp_ns, temp_pred_data), temperature_c = temp_pred_grid)
+fit_temp_bs_pred <- data.frame(speed_km_h = predict(fit_temp_bs, temp_pred_data), temperature_c = temp_pred_grid)
+corrected_tracks |>
+  ggplot(aes(x = temperature_c, y = speed_km_h)) +
+  geom_point() +
+  geom_line(data = fit_temp_pred, color = "red") +
+  geom_line(data = fit_temp_ns_pred, color = "green") +
+  geom_line(data = fit_temp_bs_pred, color = "blue") +
+  labs(x = "Temperature (°C)", y = "Speed (km/h)")
+```
+
+The B-spline (blue) seems to fit slightly better, the natural cubic spline (green) would
+not fit well for lower temperatures. However, neither of the spline models has a significant
+parameter besides the intercept, so they are not viable either.
+
+Thus, temperature seems to have either not have any effect, or the effect is so small that
+a lot more data would be required to reliably detect it.
+
+#### Effects of Track Length, Inclination, and Heart Rate
+
+Another model that seems rather intuitive is to use a track's distance, average inclination, and
+average heart rate to model the average speed:
+
+```{r basic-model}
+fit_dihr <- lm(speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm, data = corrected_tracks)
+summary(fit_dihr)
+```
+
+This model shows that inclination and heart rate are highly significant, whereas the
+distance is not. The estimated coefficients indicate the expected relationships:
+
+- steeper tracks (i.e. higher average inclination) have a lower average speed
+- a higher effort (i.e. a higher average heart rate) leads to a higher average speed
+- longer distances lead to a lower speed (however, this is relationship is not statistically significant)
+
+Furthermore, a model based on these three predictors can account for almost 60% of the observed variance
+in the data.
+
+Evaluating the model:
+
+```{r basic-model-plots}
+plot(fit_dihr)
+```
+
+The model has some obvious weaknesses (residuals at the lower and higher ends of the observed speed
+spectrum are not as close to zero as they should be, and one track (number 2) has a relatively large
+residual error and leverage), but overall it seems not too bad.
+
+#### Effect of Previous Training Session
+
+Another potential factor to influence average speed is the previous training: one could reasonably expect
+that a training session too shortly after another one would negatively affect speed for the second
+training. On the other hand, too long of a break between trainings should probably also negatively affect
+average speed (assuming that a positive effect of a training is slowly lost over time).
+
+To validate this hypothesis, the previous model using distance, inclination, and heart rate can be
+extended with the number of days since the last training, and the previous training's distance,
+inclination and average heart rate:
+
+```{r prev-training-model}
+corrected_tracks <- corrected_tracks |>
+  mutate(
+    previous_training_date = lag(date),
+    days_since_previous_training = as.numeric(difftime(date, previous_training_date, units = "days"))
+  )
+augmented_tracks <- corrected_tracks |>
+  inner_join(corrected_tracks, join_by(previous_training_date == date), suffix = c("", "_previous_training"))
+fit_pt <- lm(speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm + days_since_previous_training + distance_km_previous_training + avg_inclination_previous_training + avg_hr_bpm_previous_training, data = augmented_tracks)
+summary(fit_pt)
+```
+
+In this model, the days since the previous training, and the previous training's distance
+are significant factors, the previous training's inclination and average heart rate are not.
+This seems counterintuitive, considering in the previous, simpler model (the one without
+considering the previous training), the distance was not a significant factor, and inclination
+and heart rate were highly significant. In this extended model, inclination and heart rate
+are still significant for the current training, but are not significant for the previous training.
+Furthermore, both the current and the previous training's distance is now a significant predictor.
+
+While some of the additional predictors are significant, the extended model only explains about an
+additional three percentage points of variance in the data. Additionally, the diagnostic plots
+look much worse than for the simpler model:
+
+```{r prev-training-model-plot}
+plot(fit_pt)
+```
+
+There are now data points with higher leverage than before which also have larger residuals, the QQ-plot
+shows a larger deviation from the diagonal at the low end, and the residuals plot looks worse as well.
+Overall, taking the previous training into account seems to not be worthwile: the model only explains
+slightly more variance, at the cost of significantly worse diagnostics.
+
+#### Effects of Training Season
+
+Since the data is actually a time series, it seems likely that there is a time-based aspect to a
+potential training effect. In order to take this into consideration for a linear model, the month
+and calendar week were tried as predictors.
+
+```{r month-model}
+tracks_speed_month <- corrected_tracks |>
+  mutate(month = as.factor(month(date))) |>
+  select(speed_km_h, month)
+  
+fit_month <- lm(speed_km_h ~ month, data = tracks_speed_month)
+summary(fit_month)
+```
+
+Apparently, later months do not have a significantly different average speed than the first
+month in the data (i.e. March). Using Helmert contrasts instead of the (default) treatment
+contrasts to compare later months to preceding months (instead of comparing to the March baseline),
+there are again no significant results:
+
+```{r month-model-helmert}
+contrasts(tracks_speed_month$month) <- "contr.helmert"
+summary(lm(speed_km_h ~ month, data = tracks_speed_month))
+```
+
+Maybe, however, the training effect lies in the fact that later in the season the average
+track is longer/steeper/more exhausting in general?
+
+```{r distances-by-month}
+corrected_tracks |>
+  ggplot(aes(x = as.factor(month(date)), y = distance_km)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.25, color = "#0000f0", alpha = 0.5) +
+  labs(x = "Month", y = "Distance (km)") +
+  ggtitle("Track Length by Month")
+```
+
+Overall, and with the exception of March (for which there is only one data point), at least
+the median length of the tracks seems to follow a pattern of longer tracks during the summer,
+and shorter tracks at the beginning and end of the season. This might be related to fitness
+level, and/or to the weather (temperature, precipitation) and available daylight (longer days
+in the summer months, shorter days in spring and fall).
+
+Thus, let's try a model taking into account the month, as well as the distance, inclination,
+and heart rate, and their interaction with the month:
+
+```{r month-interactions-model}
+fit_month_and_more <- lm(speed_km_h ~ as.factor(month(date)) * (distance_km + avg_hr_bpm + avg_inclination), data = corrected_tracks)
+summary(fit_month_and_more)
+```
+
+Due to the dummy-coded month variable and the interactions, there are now a lot more
+parameters, only few of which are significant. Furthermore, the interactions with
+the October-level of the month variable produce `NA`s, suggesting multicollinearity
+or some other problem.
+
+The model now explains about 71% of the variance in the data, however, due to the
+model complexity, and the large number of non-significant parameters, it appears dubious
+whether the model is appropriate.
+
+The diagnostic plots, on the other hand, don't look too bad (though worse than those
+of the simpler model using just distance, inclination, and heart rate):
+
+```{r month-interactions-model-plot}
+plot(fit_month_and_more)
+```
+
+Trying the same thing with higher temporal resolution (using calendar week instead
+of month) is pointless, though:
+
+```{r distances-by-calendar-week}
+corrected_tracks |>
+  ggplot(aes(x = as.factor(isoweek(date)), y = distance_km)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.25, color = "#0000f0", alpha = 0.5) +
+  labs(x = "Calendar Week", y = "Distance (km)") +
+  ggtitle("Track Length by Calendar Week")
+```
+
+There are now a lot more factor levels, and correspondingly fewer data points per level,
+so fitting a model in the same way as for month just results in a model with lots of
+non-significant parameters:
+
+```{r calendar-week-model, echo = FALSE}
+fit_calendar_week_and_more <- lm(speed_km_h ~ as.factor(isoweek(date)) * (distance_km + avg_hr_bpm + avg_inclination), data = corrected_tracks)
+summary(fit_calendar_week_and_more)
+```
+
+While the R-squared has again improved (now explaining 86% of the variance), the diagnostics
+plots look terrible (see QQ-plot, and residuals vs. leverage plot), suggesting the same
+thing mentioned before: realistically, the model is useless.
+
+```{r calendar-week-interactions-model-plot}
+plot(fit_calendar_week_and_more)
+```
+
+#### ElasticNet
+
+In order to identify which predictors are important, an ElasticNet fit can be tried.
+The point to keep in mind here is that the average inclination is a very important predictor, but
+the values are very small, which will result in a rather large model coefficient. Therefore, to make
+the other coefficients visible in the trace plot, the `avg_inclination` value was scaled by a factor
+of 100 (i.e. an average inclination of 1 now corresponds to 1% of inclination).
+
+```{r glmnet}
+numerical_track_components <- corrected_tracks |>
+  select(!date & !previous_training_date & !weekday & !samples & !altitude_gain_m) |>
+  mutate(avg_inclination = avg_inclination * 100) # scale avg. inclination to %
+
+training_set_ratio <- 0.7
+training_set_indices <- 
+  sample(1:nrow(numerical_track_components),
+         nrow(numerical_track_components) * training_set_ratio) |>
+  sort()
+training_set <- numerical_track_components[training_set_indices,]
+test_set <- numerical_track_components[setdiff(1:nrow(numerical_track_components), training_set_indices),]
+
+# glmnet mixing param (hyperparameter; should be tuned instead of hard-coded)
+# for now: alpha = 1, i.e. Lasso regression (0 = Ridge; 0 < alpha < 1 = mixed)
+alpha <- 1
+
+fit_glm <- glmnet(
+  x = training_set |> na.omit() |> select(!speed_km_h),
+  y = training_set |> na.omit() |> select(speed_km_h) |> as.matrix(),
+  alpha = alpha)
+cv_glm <- cv.glmnet(
+  x = training_set |> na.omit() |> select(!speed_km_h) |> as.matrix(),
+  y = training_set |> na.omit() |> select(speed_km_h) |> as.matrix(),
+  alpha = alpha)
+plot(fit_glm, xvar = "lambda")
+plot(cv_glm)
+```
+
+As can be seen, with a Lasso regression, the algorithm will create a model using 11 predictors (and
+an intercept) for both the 1 SE $\lambda$, and for the minimum MSE $\lambda$:
+
+```{r glm-lambda-1se-coefs}
+coef(fit_glm, cv_glm$lambda.1se)
+```
+
+
+```{r glm-lambda-min-coefs}
+coef(fit_glm, cv_glm$lambda.min)
+```
+
+However, in both models there are a lot of variables that are probably relatively strongly correlated
+(e.g. all the heart rate variables, or the time and distance variables):
+
+```{r predictor-correlations}
+cor(numerical_track_components)
+```
+
+What would happen if we eliminate `time_min` and keep only `avg_hr_bpm` for the heart rate variables?
+
+```{r glmnet-reduced}
+numerical_track_components_reduced <- numerical_track_components |>
+  select(!time_min & !below_zones_min & !zone1_min & !zone2_min & !zone3_min & !zone4_min & !above_zones_min)
+
+# same training/test set split and alpha as for the larger glmnet model
+training_set_reduced <- numerical_track_components_reduced[training_set_indices,]
+test_set_reduced <- numerical_track_components_reduced[setdiff(1:nrow(numerical_track_components_reduced), training_set_indices),]
+
+fit_glm_reduced <- glmnet(
+  x = training_set_reduced |> na.omit() |> select(!speed_km_h),
+  y = training_set_reduced |> na.omit() |> select(speed_km_h) |> as.matrix(),
+  alpha = alpha)
+cv_glm_reduced <- cv.glmnet(
+  x = training_set_reduced |> na.omit() |> select(!speed_km_h) |> as.matrix(),
+  y = training_set_reduced |> na.omit() |> select(speed_km_h) |> as.matrix(),
+  alpha = alpha)
+plot(fit_glm_reduced, xvar = "lambda")
+plot(cv_glm_reduced)
+```
+We now get a model with 5 (or 3) parameters for minimum (or 1se) lambda, i.e. the minimum MSE lambda
+will use all available predictors (distance, inclination, temperature, average heart rate, and days since
+last training), whereas the 1se lambda will ignore the temperature and days since last training effects:
+
+```{r}
+coef(fit_glm_reduced, cv_glm_reduced$lambda.min)
+```
+
+```{r}
+coef(fit_glm_reduced, cv_glm_reduced$lambda.1se)
+```
+
+
+#### Random Effects Models
+
+Since fitness levels could fluctuate between years (different loss of fitness during the winter,
+increasing age, and other influences), adding random effects might be another thing to try.
+As a baseline, a linear model with fixed effects for distance, inclination, and heart rate was chosen,
+which seems the most appropriate after what we've seen in the previous sections.
+The first idea was to use a random effect for the year, and maybe a nested random effect for
+months. After the tracks were labelled (see "Clustering" and "Route-specific Linear Models" sections),
+models with a random effect for the route and a 2-level model with a random effect for years and a
+nested effect for route were also tried:
+
+```{r random-effects}
+tracks_year_month <- corrected_tracks |>
+  left_join(track_classes, join_by(date)) |>
+  mutate(
+    year = year(date),
+    month = month(date)) |>
+  filter(!is.na(track))
+
+fit_baseline <- gls(speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm, data = tracks_year_month)
+
+fit_random_year <- lme(
+  fixed = speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm,
+  random = ~ 1 | year,
+  data = tracks_year_month)
+fit_random_year_month <- lme(
+  fixed = speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm,
+  random = ~ 1 | year/month,
+  data = tracks_year_month)
+
+fit_random_track <- lme(
+  fixed = speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm,
+  random = ~ 1 | track,
+  data = tracks_year_month)
+fit_random_year_track <- lme(
+  fixed = speed_km_h ~ distance_km + avg_inclination + avg_hr_bpm,
+  random = ~ 1 | year/track,
+  data = tracks_year_month)
+
+anova(fit_baseline, fit_random_year, fit_random_year_month)
+anova(fit_baseline, fit_random_year, fit_random_year_track)
+anova(fit_baseline, fit_random_track)
+```
+
+Comparing the models, we see that adding a random effect for the route (`fit_random_track`) is not better
+than the fixed baseline model alone. However, adding a random effect for the year results in a better
+model, with the multi-level models with nested effects for month or track being even better.
+
+However, the random effects are rather small, for example, in the nested year/month model, the standard
+deviations for the random year and month effects are less than 0.6 and 0.3, respectively, with a standard
+deviation of the residual errors of almost 0.7:
+
+```{r random-year-month}
+summary(fit_random_year_month)
+```
+
+Note that only the most basic random effects were tried so far (i.e. random intercepts),
+what could also be worth investigating is adding random slopes, e.g. fitting a model
+that has a random effect for the average heart rate, depending on the year. This has
+so far not been explored further, due to time constraints.
+
+### PCA
+
+To get an impression of which variables are important, we can do a principal component analysis:
+
+```{r pca-scree-plot}
+numerical_track_components_pca <- corrected_tracks |>
+  mutate(weekday = as.numeric(weekday)) |>
+  select(!date & !previous_training_date & !samples)
+pca <- prcomp(~ ., data = numerical_track_components_pca, scale = TRUE)
+pca |>
+  tidy("pcs") |> 
+  ggplot(aes(x = PC, y = percent)) +
+  geom_col() +
+  labs(x = "PC", y = "Explained Variance")
+```
+
+As can be seen from the scree plot, the first two principal components explain almost 60% of
+the total variance in the data, with the next five principal components still explaining between
+5 and 10 percent each, and each of the last six components explaining less than 5% of the total variance.
+
+Looking at some bi-plots for some combinations of the first seven components, we can get a feeling
+for what the components mean:
+
+```{r pca-biplot}
+biplot(pca, choices = 1:2, scale = 0)
+biplot(pca, choices = 2:3, scale = 0)
+biplot(pca, choices = 3:4, scale = 0)
+biplot(pca, choices = 4:5, scale = 0)
+biplot(pca, choices = 5:6, scale = 0)
+biplot(pca, choices = 6:7, scale = 0)
+
+biplot(pca, choices = c(1,3), scale = 0)
+biplot(pca, choices = c(1,4), scale = 0)
+biplot(pca, choices = c(2,4), scale = 0)
+```
+
+The two most important components seem to correspond mostly to distance/altitude/inclination-related
+variables (PC1), and to heart rate-related variables (PC2), which is not really surprising, seeing how
+these are also the relevant predictors seen e.g. in the linear models.
+
+What is striking, though, is the relatively clean grouping of data points in the bi-plot of the first
+two components, which warrants further investigation.
+
+### Clustering
+
+After the clusters observed in the PCA biplot, the next question is if clustering reveals anything
+interesting.
+
+First, some data preparation: for clustering, we need numeric data, without `NA` values, and variables
+should be on the same scale.
+
+```{r cluster-data-prep}
+scaled_tracks <- corrected_tracks |>
+  mutate(weekday = as.numeric(weekday)) |>
+  select(!date & !previous_training_date & !samples) |>
+  scale() |>
+  as_tibble() |>
+  na.omit()
+```
+
+The first approach then is a Gaussian mixture model:
+
+```{r cluster-gaussian-mix}
+clusters_gaussian_mix <- Mclust(scaled_tracks)
+plot(clusters_gaussian_mix, what = "classification")
+```
+
+Since the plot matrix is somewhat hard to read, let's plot track distance vs speed, colored
+by clusters:
+
+```{r cluster-gaussian-mix-plot}
+scaled_tracks |>
+  mutate(cluster = factor(clusters_gaussian_mix$classification)) |>
+  ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
+  geom_point() +
+  labs(x = "Standardized Distance", y = "Standardized Speed", color = "Cluster") +
+  ggtitle("Gaussian Mixture Model Clustering")
+```
+
+It appears the Gaussian mixture model seems to have clustered the data primarily by track length.
+
+Maybe a different clustering algorithm finds some other classes? Let's try density-based spatial clustering.
+To find good clustering parameters, we start with a low `minPts` value, and try out some values for `eps`
+that seem promising from the k-nearest-neighbor-distance-plot:
+
+```{r cluster-dbscan-prep}
+kNNdistplot(scaled_tracks, k = 1)
+abline(h = 2.1, col = "red")
+abline(h = 0.5, col = "blue",lty = 2)
+abline(h = 2.55, col = "blue",lty = 2)
+abline(h = 3.25, col = "blue",lty = 2)
+abline(h = 4.1, col = "blue",lty = 2)
+```
+
+`k = 1` corresponds to a `minPts` value of 2, and the values for the `abline`s in the plot
+were tried out. The red line (corresponding to a $\varepsilon$, i.e. an `eps` value, of 2.1)
+results in three clusters (and a fourth group for "noise" data points):
+
+```{r cluster-dbscan}
+clusters_db <- dbscan(scaled_tracks, eps = 2.1, minPts = 2)
+
+scaled_tracks |>
+  mutate(cluster = factor(clusters_db$cluster)) |>
+  ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
+  geom_point() +
+  labs(x = "Standardized Distance", y = "Standardized Speed", color = "Cluster") +
+  ggtitle("Density-Based Spatial Clustering")
+```
+
+Higher density values (i.e. higher values for the `eps` parameter, and higher values for `k` in the k-NN plot)
+need different `eps` values, however, during experimenting with different `k` (and thus `minPts`) values, as
+well as different `eps` values has only resulted in fewer clusters, most of the time only one "real" and one
+noise cluster. Even with the three clusters above, we see again a classification that seems to be mostly
+based on track distance.
+
+### Route-specific Linear Models
+
+After the results of the clustering attempts (and some discussions during the intermediate presentation),
+the tracks were manually classified, based on the route driven, and (for one particular route) also the
+direction in which the route was driven (all other routes were only ever driven in one direction).
+
+This should result in much better comparability for tracks from the same group, since differences
+among routes (that cannot easily be gleaned from the data) can be eliminated by just comparing tracks
+using the same route.
+
+With that, let's try fitting a linear model again, but this time a route-specific one.
+We'll arbitrarily pick tracks 1, 2, and 4 (about 25, 40, and 60 kilometers, respectively)
+for modelling.
+
+To get a better sense for the chosen tracks: the chosen tracks are the purple, blue, and
+green tracks on the following map:
+
+```{r}
+track_linestrings |>
+  left_join(track_classes, join_by(date)) |>
+  filter(!is.na(track)) |>
+  ggplot() +
+  geom_sf(aes(color = track)) +
+  scale_color_viridis_c(option = "turbo")
+```
+
+Selecting the tracks:
+
+```{r}
+labeled_tracks <- corrected_tracks |>
+  left_join(track_classes, join_by(date))
+
+tracks_1 <- labeled_tracks |>
+  filter(track == 1)
+tracks_2 <- labeled_tracks |>
+  filter(track == 2)
+tracks_4 <- labeled_tracks |>
+  filter(track == 4)
+```
+
+Since the route is now always the same for tracks of the same group, the distance and inclination
+is always the same, and therefore won't be able to predict variations in speed. Thus, let's try
+a model using heart rate and temperature:
+
+```{r}
+fit_track_1 <- lm(speed_km_h ~ avg_hr_bpm + temperature_c, data = tracks_1)
+summary(fit_track_1)
+plot(fit_track_1)
+```
+
+```{r}
+fit_track_2 <- lm(speed_km_h ~ avg_hr_bpm + temperature_c, data = tracks_2)
+summary(fit_track_2)
+plot(fit_track_2)
+```
+
+```{r}
+fit_track_4 <- lm(speed_km_h ~ avg_hr_bpm + temperature_c, data = tracks_4)
+summary(fit_track_4)
+plot(fit_track_4)
+```
+
+For all of the three routes, we see that the temperature has no significant effect. Again, we
+could try to find a training effect during the course of the season, however, for the selected
+tracks we now have fewer data points per route: only 10 tracks in group 2, and while tracks in
+groups 1 and 4 have 55 and 52 observations, the observations for group 4 are almost all in the later
+part of the season, which is not great for modeling:
+
+```{r}
+tracks_1 |> ggplot(aes(x = month(date))) + geom_bar()
+tracks_4 |> ggplot(aes(x = month(date))) + geom_bar()
+```
+
+The class 1 tracks only have 3 observations in October, but overall the number of available
+data points for this group looks better, so let's try to create a model for this group:
+
+```{r}
+tracks_1_speed_month <- tracks_1 |>
+  mutate(month = as.factor(month(date))) |>
+  select(speed_km_h, month)
+
+fit_tracks_1_month <- lm(speed_km_h ~ month, data = tracks_1_speed_month)
+summary(fit_tracks_1_month)
+plot(fit_tracks_1_month)
+```
+
+Again, no significant effect can be found.
+Considering that the model using heart rate and temperature explained only 40% of the variance,
+and without an obvious training effect over the course of the season, there are probably factors
+influencing the average speed that are not available in the data. This could be environmental factors
+(e.g. wind), or fitness-related factors (e.g. influences of other trainings that were not recorded).
+In any case, the available data seems insufficient to accurately predict the average speed for a track,
+with the only somewhat certain statement seeming "higher average heart rate (i.e. higher training effort)
+correlates with higher average speed", which seems logical, even without looking at the data.
+
+### Dynamic Time Warping
+
+Another technique suggested during the discussion after the mid-term presentation is dynamic time
+warping.
+Tracks along the same route could be time-warped, and the resulting mappings could then be analyzed
+to find parts of the route that have low or high variation among tracks.
+
+Due to time constraints, this is not finished yet, it is still very much work in progress.
+
+```{r dynamic-time-warp-1}
+tracks_1_fastest <- tracks_1 |> slice_min(time_min) |> pull(date)
+tracks_1_slowest <- tracks_1 |> slice_max(time_min) |> pull(date)
+
+t1f <- track_details |>
+  filter(date == tracks_1_fastest) |>
+  select(latitude, longitude)
+t1s <- track_details |> 
+  filter(date == tracks_1_slowest) |>
+  select(latitude, longitude)
+a <- dtw(t1s, t1f, keep = TRUE)
+plot(a, type = "alignment")
+plot(a, type = "density")
+#plot(a, type = "two", offset = -200)
+```
+
+
+```{r dynamic-time-warp-2}
+tracks_2_fastest <- tracks_2 |> slice_min(time_min) |> pull(date)
+tracks_2_slowest <- tracks_2 |> slice_max(time_min) |> pull(date)
+
+t2f <- track_details |>
+  filter(date == tracks_2_fastest) |>
+  select(latitude, longitude)
+t2s <- track_details |> 
+  filter(date == tracks_2_slowest) |>
+  select(latitude, longitude)
+b <- dtw(t2s, t2f, keep = TRUE)
+plot(b, type = "alignment")
+plot(b, type = "density")
+#plot(a, type = "two", offset = -200)
+```
+
+
+```{r dynamic-time-warp-4}
+tracks_4_fastest <- tracks_4 |> slice_min(time_min) |> pull(date)
+tracks_4_slowest <- tracks_4 |> slice_max(time_min) |> pull(date)
+
+t4f <- track_details |>
+  filter(date == tracks_4_fastest) |>
+  select(latitude, longitude)
+t4s <- track_details |> 
+  filter(date == tracks_4_slowest) |>
+  select(latitude, longitude)
+c <- dtw(t4s, t4f, keep = TRUE)
+plot(c, type = "alignment")
+plot(c, type = "density")
+#plot(a, type = "two", offset = -200)
+```

@@ -1,0 +1,60 @@
+---
+title: "About"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{About}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(asds2024.nils.practical)
+```
+
+This R package contains data, code, and vignettes for the final, practical module ("Praxismodul")
+of the Certificate of Advanced Studies in Advanced Statistical Data Science
+([CAS ASDS](https://www.unibe.ch/weiterbildungsangebote/cas_advanced_statistical_data_science/index_ger.html))
+at the [University of Berne](https://www.unibe.ch/index_eng.html) for the class of 2024.
+
+The primary objective of the module was a statistical analysis of real data, using techniques
+learned during the course of the CAS.
+
+Additionally, to get more acquainted with R, I tried to improve my knowledge of R, and incorporate some tools
+and techniques related to R that I had not used during previous classes, but which could prove useful in future
+projects. For this reason, the main part of the work is packaged as an R module, containing all relevant data,
+and including the analysis part (i.e. the main part of the course module) as vignettes.
+This is an attempt to package the main components in a reproducible research style, as suggested e.g. in
+[@marwick2018-peerj; @marwick2018-tas].
+
+The documents used for the mid-term presentation and final submission are not packaged as vignettes, since
+the main objective was to get decent slides and a good-looking final paper, which meant using some LaTeX
+features that do not necessarily work well for vignettes. The files are still available in the package's
+sources, though, in the _articles_ subfolder of the _vignettes_ folder. For learning purposes, the final paper
+is available in triplicate, once as a basic `pdf_document` file, and (in the respective subfolders) using
+`rticles` document templates for Elsevier and Springer journal papers (which require specific yaml front
+matter, and for which the content was slightly adjusted layout-wise).
+
+## Reproducible Research
+
+Using R packages in order to bundle all necessary resources to make a data analysis project reproducible has
+been suggested by multiple sources (e.g. [@rpackages2e; @mflight2014; @marwick2018-peerj; @marwick2018-tas]),
+with other sources (e.g. [@mflight2021]) suggesting lighter-weight approaches like [@R-targets; @targets2021].
+Since one of my goals was to learn more about R and the R ecosystem, the more complex setup using an R package
+was chosen, mostly for the learning experience. The CRAN task view for reproducible research [@cran-view-rr]
+contains many other possibilities for future exploration.
+
+If you want to cite this package for some reason, you can use e.g.
+
+```{r}
+citation("asds2024.nils.practical")
+```
+
+## References {-}

@@ -68,6 +68,7 @@ to_linestrings <- function(points) {
 #' - `distance_km` length of the track (in kilometers)
 #' - `time_min` duration of the track (in minutes)
 #' - `altitude_gain_m` total altitude gained during the track (in meters), without compensating for altitude lost
+#' - `avg_inclination` average inclination of the track, calculated as altitude gain in meters / distance in m
 #' - `temperature_c` median temperature of the track (in degrees Celsius)
 #' - `speed_km_h` average speed of the track (in km/h)
 #' - `avg_hr_bpm` average heart rate for the track (in beats per minute)
@@ -97,6 +98,7 @@ summarize_tracks <- function(tracks) {
       distance_km = max(distance_absolute_m) / 1000,
       time_min = max(training_time_absolute_s) / (100 * 60),
       altitude_gain_m = max(uphill_m),
+      avg_inclination = altitude_gain_m / (distance_km * 1000),
       temperature_c = stats::median(temperature_c),
       speed_km_h = mean(speed_m_s) * 3.6,
       avg_hr_bpm = mean(heartrate_bpm),
@@ -113,4 +115,32 @@ summarize_tracks <- function(tracks) {
       # note: this is for Linux, the locale string might be different on other OSs
       weekday = forcats::fct(withr::with_locale(c("LC_TIME" = "en_US.UTF-8"), weekdays(date)))
     )
+}
+
+#' Plot a Single Track with a Given Date
+#'
+#' Takes a date, and a collection of points, then plots a track of all points which have the same
+#' date as the one specified.
+#' Points with `NA` values for latitude and/or longitude will be filtered out.
+#' Remaining points will be converted [to_linestrings()] before plotting.
+#' Return value is the plot object, i.e. additional plot layers can be added in the usual ggplot way.
+#'
+#' @param track_date the date for which to plot the track
+#' @param points A data.frame or tibble with (at least) a `date` and an sf geometry column containing a point for each observation
+#'
+#' @return a basic [ggplot2::ggplot()] with a [ggplot2::geom_sf()] layer for the track
+#'
+#' @export
+#'
+#' @examples
+#' plot_track(lubridate::ymd("2020-05-20"), track_details)
+plot_track <- function(track_date, points) {
+  points |>
+    dplyr::filter(date == track_date) |>
+    dplyr::filter(!is.na(latitude) & !is.na(longitude)) |>
+    sf::st_as_sf(coords = c("longitude", "latitude"), crs = "WGS84") |>
+    sf::st_transform(crs = 2056) |>
+    to_linestrings() |>
+    ggplot2::ggplot() +
+    ggplot2::geom_sf()
 }
