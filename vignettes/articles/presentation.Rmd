@@ -26,7 +26,9 @@ knitr::opts_chunk$set(
 
 ```{r package_setup, include = FALSE}
 library(asds2024.nils.practical)
-library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
 library(sf)
 library(ggspatial)
 theme_set(theme_minimal())
@@ -407,7 +409,7 @@ clusters_gaussian_mix <- Mclust(scaled_tracks)
 # plot(clusters_gaussian_mix, what = "classification")
 
 scaled_tracks |>
-  add_column(cluster = factor(clusters_gaussian_mix$classification)) |>
+  mutate(cluster = factor(clusters_gaussian_mix$classification)) |>
   ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
   geom_point() +
   labs(x = "Standardized Distance", y = "Standardized Speed", color = "Cluster") +
@@ -423,7 +425,7 @@ scaled_tracks |>
 clusters_db <- dbscan(scaled_tracks, eps = 2.1, minPts = 2)
 
 scaled_tracks |>
-  add_column(cluster = factor(clusters_db$cluster)) |>
+  mutate(cluster = factor(clusters_db$cluster)) |>
   ggplot(aes(x = distance_km, y = speed_km_h, color = cluster)) +
   geom_point() +
   labs(x = "Standardized Distance", y = "Standardized Speed", color = "Cluster") +

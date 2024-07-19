@@ -29,13 +29,13 @@ utilities and info snippets.
 
 To get a first overview of the data, have a look at its documentation, e.g.
 
-```{r}
+```{r tracks-description}
 ?tracks
 ```
 
 or maybe plot it:
 
-```{r, out.width = "80%", fig.align = "center"}
+```{r tracks-plot, out.width = "80%", fig.align = "center"}
 be_fr <- swiss_cantons |>
   filter(KTNR %in% c(2,10)) # 2 = BE, 10 = FR
 be_fr_lakes <- swiss_lakes |>
