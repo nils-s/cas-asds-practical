@@ -1,6 +1,6 @@
 Package: asds2024.nils.practical
 Title: Practical Project for CAS ASDS 2024
-Version: 0.1.0.9000
+Version: 0.2.0
 Authors@R: 
     person("Nils", "S.", , "28589333+nils-s@users.noreply.github.com", role = c("aut", "cre"))
 Description: Code and data for the final practical module of the CAS ASDS
