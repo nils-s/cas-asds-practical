@@ -85,7 +85,7 @@ See [the `sf` documentation](https://r-spatial.github.io/sf/) for more informati
 
 ## Example
 
-```{r}
+```r
 library(asds2024.nils.practical)
 vignette("get-started", package = "asds2024.nils.practical")
 ```

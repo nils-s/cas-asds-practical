@@ -1,0 +1,17 @@
+# basic dependabot config to keep GitHub actions up-to-date
+
+version: 2
+updates:
+
+  # auto-update GitHub actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+    assignees:
+      - "nils-s"
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 1

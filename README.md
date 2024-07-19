@@ -70,7 +70,7 @@ code snippet above.
 The main suspect in this regard is the `sf` package, which has a few
 dependencies of its own (not all of which are R packages). The first
 thing to try (after studying the error messages, of course) is to make
-sure all prerequisites for `sf` are fulfilled (e.g. the
+sure all prerequisites for `sf` are fulfilled (e.g. the
 [GEOS](https://libgeos.org), [GDAL](https://gdal.org), and
 [PROJ](https://proj.org/) libraries).
 
@@ -88,7 +88,6 @@ information.
 ``` r
 library(asds2024.nils.practical)
 vignette("get-started", package = "asds2024.nils.practical")
-#> Warning: Vignette 'get-started' nicht gefunden
 ```
 
 ## References
