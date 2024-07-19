@@ -35,7 +35,7 @@ To get a first overview of the data, have a look at its documentation, e.g.
 
 or maybe plot it:
 
-```{r tracks-plot, out.width = "80%", fig.align = "center"}
+```{r tracks-plot, out.width = "80%", fig.align = "center", fig.alt = "Tracks plotted on a map of cantons Berne and Fribourg"}
 be_fr <- swiss_cantons |>
   filter(KTNR %in% c(2,10)) # 2 = BE, 10 = FR
 be_fr_lakes <- swiss_lakes |>
