@@ -91,16 +91,39 @@
 <h3 id="installation-troubleshooting">Installation Troubleshooting<a class="anchor" aria-label="anchor" href="#installation-troubleshooting"></a>
 </h3>
 <p>Assuming the <code>devtools</code> package is installed (and <code>install_github</code> is available), this package by itself should not cause problems (simply because it contains very little stuff that could cause problems). However, it depends on a bunch of dependencies, which will be installed when installing this package’s suggested dependencies as shown in the code snippet above.</p>
-<p>The main suspect in this regard is the <code>sf</code> package, which has a few dependencies of its own (not all of which are R packages). The first thing to try (after studying the error messages, of course) is to make sure all prerequisites for <code>sf</code> are fulfilled (e.g. the <a href="https://libgeos.org" class="external-link">GEOS</a>, <a href="https://gdal.org" class="external-link">GDAL</a>, and <a href="https://proj.org/" class="external-link">PROJ</a> libraries).</p>
+<div class="section level4">
+<h4 id="problems-when-installing-sf">Problems when Installing <code>sf</code>
+<a class="anchor" aria-label="anchor" href="#problems-when-installing-sf"></a>
+</h4>
+<p>The <code>sf</code> package has a few dependencies of its own (not all of which are R packages). The first thing to try (after studying the error messages, of course) is to make sure all prerequisites for <code>sf</code> are fulfilled (e.g. the <a href="https://libgeos.org" class="external-link">GEOS</a>, <a href="https://gdal.org" class="external-link">GDAL</a>, and <a href="https://proj.org/" class="external-link">PROJ</a> libraries).</p>
 <p>On a Fedora machine, the following should get you started:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">sudo</span> dnf install gdal gdal-devel udunits2-devel proj proj-devel geos geos-devel</span></code></pre></div>
 <p>See <a href="https://r-spatial.github.io/sf/" class="external-link">the <code>sf</code> documentation</a> for more information.</p>
+</div>
+<div class="section level4">
+<h4 id="compilation-errors-when-installing-source-packages">Compilation Errors when Installing Source Packages<a class="anchor" aria-label="anchor" href="#compilation-errors-when-installing-source-packages"></a>
+</h4>
+<p>When installing packages from source (as is common on Linux), compilation errors may occur due to aggressive compiler flag settings used in conjunction with C or C++ sources and <code>Rcpp</code>. In case you see errors like</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>...</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="sc">/</span>usr<span class="sc">/</span>local<span class="sc">/</span>lib<span class="sc">/</span>R<span class="sc">/</span>site<span class="sc">-</span>library<span class="sc">/</span>Rcpp<span class="sc">/</span>include<span class="sc">/</span>Rcpp<span class="sc">/</span>iostream<span class="sc">/</span>Rstreambuf.h<span class="sc">:</span><span class="dv">53</span><span class="sc">:</span><span class="dv">20</span><span class="sc">:</span> warning<span class="sc">:</span> field precision specifier ‘.<span class="sc">*</span>’ expects argument of type ‘int’, but argument <span class="dv">2</span> has type ‘std<span class="sc">::</span>streamsize’ {aka ‘long int’} [<span class="sc">-</span>Wformat<span class="ot">=</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>   <span class="dv">53</span> <span class="sc">|</span>         <span class="fu">Rprintf</span>(<span class="st">"%.*s"</span>, num, s);</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>      <span class="sc">|</span>                  <span class="er">~~^~</span>   <span class="er">~~~</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>      <span class="er">|</span>                    <span class="er">|</span>    <span class="er">|</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>      <span class="er">|</span>                    int  std<span class="sc">::</span>streamsize {aka long int}</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>...</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>...<span class="sc">/</span>include<span class="sc">/</span>Rcpp<span class="sc">/</span>print.h<span class="sc">:</span><span class="dv">30</span><span class="sc">:</span><span class="dv">19</span><span class="sc">:</span> error<span class="sc">:</span> format not a string literal and no format arguments [<span class="sc">-</span>Werror<span class="ot">=</span>format<span class="sc">-</span>security]</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>...</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>ERROR<span class="sc">:</span> compilation failed <span class="cf">for</span> package ...</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>...</span></code></pre></div>
+<p>you should probably open an issue in the Github/Gitlab/whatever repo of the package that caused the error.</p>
+<p>You should absolutely not go into <code>$(R RHOME)/etc/Makeconf</code> and change the compiler flags, like for example removing <code>-Werror=format-security</code> from the <code>CXX14FLAGS</code> or similar ;)</p>
+</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nils-s.github.io/cas-asds-practical/">asds2024.nils.practical</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"get-started"</span>, package <span class="op">=</span> <span class="st">"asds2024.nils.practical"</span><span class="op">)</span></span></code></pre></div>
 </div>
