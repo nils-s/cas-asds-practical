@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{track_details}}{
 
-A data frame with 172,226 rows and 38 columns:
+A data frame with 162,175 rows and 38 columns:
 \describe{
 \item{year}{Year of the trip (integer)}
 \item{month}{Month of the trip (integer)}

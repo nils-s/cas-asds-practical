@@ -67,11 +67,12 @@ However, it depends on a bunch of dependencies, which will be installed
 when installing this package’s suggested dependencies as shown in the
 code snippet above.
 
-The main suspect in this regard is the `sf` package, which has a few
-dependencies of its own (not all of which are R packages). The first
-thing to try (after studying the error messages, of course) is to make
-sure all prerequisites for `sf` are fulfilled (e.g. the
-[GEOS](https://libgeos.org), [GDAL](https://gdal.org), and
+#### Problems when Installing `sf`
+
+The `sf` package has a few dependencies of its own (not all of which are
+R packages). The first thing to try (after studying the error messages,
+of course) is to make sure all prerequisites for `sf` are fulfilled
+(e.g. the [GEOS](https://libgeos.org), [GDAL](https://gdal.org), and
 [PROJ](https://proj.org/) libraries).
 
 On a Fedora machine, the following should get you started:
@@ -82,6 +83,32 @@ sudo dnf install gdal gdal-devel udunits2-devel proj proj-devel geos geos-devel
 
 See [the `sf` documentation](https://r-spatial.github.io/sf/) for more
 information.
+
+#### Compilation Errors when Installing Source Packages
+
+When installing packages from source (as is common on Linux),
+compilation errors may occur due to aggressive compiler flag settings
+used in conjunction with C or C++ sources and `Rcpp`. In case you see
+errors like
+
+    ...
+    /usr/local/lib/R/site-library/Rcpp/include/Rcpp/iostream/Rstreambuf.h:53:20: warning: field precision specifier ‘.*’ expects argument of type ‘int’, but argument 2 has type ‘std::streamsize’ {aka ‘long int’} [-Wformat=]
+       53 |         Rprintf("%.*s", num, s);
+          |                  ~~^~   ~~~
+          |                    |    |
+          |                    int  std::streamsize {aka long int}
+    ...
+    .../include/Rcpp/print.h:30:19: error: format not a string literal and no format arguments [-Werror=format-security]
+    ...
+    ERROR: compilation failed for package ...
+    ...
+
+you should probably open an issue in the Github/Gitlab/whatever repo of
+the package that caused the error.
+
+You should absolutely not go into `$(R RHOME)/etc/Makeconf` and change
+the compiler flags, like for example removing `-Werror=format-security`
+from the `CXX14FLAGS` or similar ;)
 
 ## Example
 

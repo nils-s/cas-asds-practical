@@ -120,7 +120,7 @@ analysis of available data.
 
 ## Analyses
 
-The initial raw data has been pre-processed for inclusion in the package (see `vignette("TODO")`), however,
+The initial raw data has been pre-processed for inclusion in the package (see `vignette("data")`), however,
 first cursory analyses in an interactive session still showed some unexpected results. Some more cleaning
 was therefore done first.
 
