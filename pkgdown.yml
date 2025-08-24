@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   about: about.html
@@ -8,7 +8,7 @@ articles:
   data: data.html
   get-started: get-started.html
   articles/presentation: presentation.html
-last_built: 2024-12-04T18:05Z
+last_built: 2025-08-24T17:50Z
 urls:
   reference: https://nils-s.github.io/cas-asds-practical/reference
   article: https://nils-s.github.io/cas-asds-practical/articles

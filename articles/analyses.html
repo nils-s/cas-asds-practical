@@ -951,24 +951,24 @@ and for the minimum MSE
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_glm</span>, <span class="va">cv_glm</span><span class="op">$</span><span class="va">lambda.1se</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 13 x 1 sparse Matrix of class "dgCMatrix"</span></span>
-<span><span class="co">#&gt;                                        s1</span></span>
-<span><span class="co">#&gt; (Intercept)                  24.544688191</span></span>
-<span><span class="co">#&gt; distance_km                   0.222572784</span></span>
-<span><span class="co">#&gt; time_min                     -0.096183174</span></span>
-<span><span class="co">#&gt; avg_inclination              -3.157811718</span></span>
-<span><span class="co">#&gt; temperature_c                -0.010519095</span></span>
-<span><span class="co">#&gt; avg_hr_bpm                    0.051116808</span></span>
-<span><span class="co">#&gt; below_zones_min               0.017428942</span></span>
-<span><span class="co">#&gt; zone1_min                    -0.028204552</span></span>
-<span><span class="co">#&gt; zone2_min                    -0.010900509</span></span>
-<span><span class="co">#&gt; zone3_min                     .          </span></span>
-<span><span class="co">#&gt; zone4_min                    -0.035141159</span></span>
-<span><span class="co">#&gt; above_zones_min              -0.226121274</span></span>
-<span><span class="co">#&gt; days_since_previous_training -0.001913364</span></span></code></pre></div>
+<span><span class="co">#&gt;                              s=0.008125304</span></span>
+<span><span class="co">#&gt; (Intercept)                   24.544688191</span></span>
+<span><span class="co">#&gt; distance_km                    0.222572784</span></span>
+<span><span class="co">#&gt; time_min                      -0.096183174</span></span>
+<span><span class="co">#&gt; avg_inclination               -3.157811718</span></span>
+<span><span class="co">#&gt; temperature_c                 -0.010519095</span></span>
+<span><span class="co">#&gt; avg_hr_bpm                     0.051116808</span></span>
+<span><span class="co">#&gt; below_zones_min                0.017428942</span></span>
+<span><span class="co">#&gt; zone1_min                     -0.028204552</span></span>
+<span><span class="co">#&gt; zone2_min                     -0.010900509</span></span>
+<span><span class="co">#&gt; zone3_min                      .          </span></span>
+<span><span class="co">#&gt; zone4_min                     -0.035141159</span></span>
+<span><span class="co">#&gt; above_zones_min               -0.226121274</span></span>
+<span><span class="co">#&gt; days_since_previous_training  -0.001913364</span></span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_glm</span>, <span class="va">cv_glm</span><span class="op">$</span><span class="va">lambda.min</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 13 x 1 sparse Matrix of class "dgCMatrix"</span></span>
-<span><span class="co">#&gt;                                        s1</span></span>
+<span><span class="co">#&gt;                              s=0.00423654</span></span>
 <span><span class="co">#&gt; (Intercept)                  23.174671976</span></span>
 <span><span class="co">#&gt; distance_km                   0.312168642</span></span>
 <span><span class="co">#&gt; time_min                     -0.140060373</span></span>
@@ -1088,7 +1088,7 @@ since last training effects:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_glm_reduced</span>, <span class="va">cv_glm_reduced</span><span class="op">$</span><span class="va">lambda.min</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 6 x 1 sparse Matrix of class "dgCMatrix"</span></span>
-<span><span class="co">#&gt;                                        s1</span></span>
+<span><span class="co">#&gt;                              s=0.03992323</span></span>
 <span><span class="co">#&gt; (Intercept)                  21.388765335</span></span>
 <span><span class="co">#&gt; distance_km                  -0.011019946</span></span>
 <span><span class="co">#&gt; avg_inclination              -4.244095168</span></span>
@@ -1098,7 +1098,7 @@ since last training effects:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit_glm_reduced</span>, <span class="va">cv_glm_reduced</span><span class="op">$</span><span class="va">lambda.1se</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 6 x 1 sparse Matrix of class "dgCMatrix"</span></span>
-<span><span class="co">#&gt;                                       s1</span></span>
+<span><span class="co">#&gt;                              s=0.1768847</span></span>
 <span><span class="co">#&gt; (Intercept)                  22.62977386</span></span>
 <span><span class="co">#&gt; distance_km                  -0.00551085</span></span>
 <span><span class="co">#&gt; avg_inclination              -3.63267457</span></span>
@@ -1601,7 +1601,7 @@ much work in progress.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
