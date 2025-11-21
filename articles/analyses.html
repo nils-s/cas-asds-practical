@@ -128,7 +128,7 @@ blocks) containing records for 2022 and 2023 was lost.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Year"</span>, y <span class="op">=</span> <span class="st">"Number of Tracks"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="analyses_files/figure-html/fig-tracks-per-year-1.png" alt="\label{fig-tracks-per-year}Available trip data by year" width="384"><p class="caption">
+<img src="analyses_files/figure-html/fig-tracks-per-year-1.png" class="r-plt" alt="\label{fig-tracks-per-year}Available trip data by year" width="384"><p class="caption">
 Available trip data by year
 </p>
 </div>
@@ -166,7 +166,7 @@ route to lake Thun only appears once in the data set).</p>
 <span>    style <span class="op">=</span> <span class="va">north_arrow_fancy_orienteering</span>,</span>
 <span>    which_north <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="analyses_files/figure-html/fig-tracks-map-1.png" alt="Geographic track data (in red) on a map of cantons Berne and Fribourg" width="384"><p class="caption">
+<img src="analyses_files/figure-html/fig-tracks-map-1.png" class="r-plt" alt="Geographic track data (in red) on a map of cantons Berne and Fribourg" width="384"><p class="caption">
 Geographic track data (in red) on a map of cantons Berne and Fribourg
 </p>
 </div>
@@ -195,7 +195,7 @@ hiccup:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Training Time (s)"</span>, y <span class="op">=</span> <span class="st">"Distance (km)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Track 157: Distance Over Time"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/track157-raw-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/track157-raw-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>This seems easy enough to fix, though, since it appears that only the
 <code>distance_absolute_m</code> values for that track seem to have a
 sudden jump. Knowing the total length of that track (slightly more than
@@ -244,7 +244,7 @@ and all subsequent points.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Training Time (s)"</span>, y <span class="op">=</span> <span class="st">"Distance (km)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Track 157: Corrected Distance Over Time"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/track157-corrected-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/track157-corrected-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>The corrected data is used for all further analyses.</p>
 </div>
 <div class="section level3">
@@ -305,7 +305,7 @@ that e.g. a quadratic function could be a better fit for the data.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">fit_temp_ns_pred</span>, color <span class="op">=</span> <span class="st">"green"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">fit_temp_bs_pred</span>, color <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Temperature (°C)"</span>, y <span class="op">=</span> <span class="st">"Speed (km/h)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/temperature-model-splines-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/temperature-model-splines-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>The B-spline (blue) seems to fit slightly better, the natural cubic
 spline (green) would not fit well for lower temperatures. However,
 neither of the spline models has a significant parameter besides the
@@ -360,7 +360,7 @@ almost 60% of the observed variance in the data.</p>
 <p>Evaluating the model:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_dihr</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/basic-model-plots-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/basic-model-plots-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/basic-model-plots-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/basic-model-plots-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/basic-model-plots-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/basic-model-plots-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/basic-model-plots-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/basic-model-plots-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>The model has some obvious weaknesses (residuals at the lower and
 higher ends of the observed speed spectrum are not as close to zero as
 they should be, and one track (number 2) has a relatively large residual
@@ -432,7 +432,7 @@ variance in the data. Additionally, the diagnostic plots look much worse
 than for the simpler model:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_pt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/prev-training-model-plot-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/prev-training-model-plot-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/prev-training-model-plot-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/prev-training-model-plot-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/prev-training-model-plot-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/prev-training-model-plot-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/prev-training-model-plot-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/prev-training-model-plot-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>There are now data points with higher leverage than before which also
 have larger residuals, the QQ-plot shows a larger deviation from the
 diagonal at the low end, and the residuals plot looks worse as well.
@@ -520,7 +520,7 @@ general?</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="st">"#0000f0"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Month"</span>, y <span class="op">=</span> <span class="st">"Distance (km)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Track Length by Month"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/distances-by-month-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/distances-by-month-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>Overall, and with the exception of March (for which there is only one
 data point), at least the median length of the tracks seems to follow a
 pattern of longer tracks during the summer, and shorter tracks at the
@@ -630,7 +630,7 @@ worse than those of the simpler model using just distance, inclination,
 and heart rate):</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_month_and_more</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/month-interactions-model-plot-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/month-interactions-model-plot-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/month-interactions-model-plot-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/month-interactions-model-plot-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/month-interactions-model-plot-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/month-interactions-model-plot-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/month-interactions-model-plot-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/month-interactions-model-plot-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>Trying the same thing with higher temporal resolution (using calendar
 week instead of month) is pointless, though:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -640,7 +640,7 @@ week instead of month) is pointless, though:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="st">"#0000f0"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Calendar Week"</span>, y <span class="op">=</span> <span class="st">"Distance (km)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Track Length by Calendar Week"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/distances-by-calendar-week-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/distances-by-calendar-week-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>There are now a lot more factor levels, and correspondingly fewer
 data points per level, so fitting a model in the same way as for month
 just results in a model with lots of non-significant parameters:</p>
@@ -900,7 +900,7 @@ residuals vs. leverage plot), suggesting the same thing mentioned
 before: realistically, the model is useless.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_calendar_week_and_more</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/calendar-week-interactions-model-plot-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
 <h4 id="elasticnet">ElasticNet<a class="anchor" aria-label="anchor" href="#elasticnet"></a>
@@ -939,10 +939,10 @@ inclination).</p>
 <span>  y <span class="op">=</span> <span class="va">training_set</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">speed_km_h</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="va">alpha</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_glm</span>, xvar <span class="op">=</span> <span class="st">"lambda"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/glmnet-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/glmnet-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cv_glm</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/glmnet-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/glmnet-2.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>As can be seen, with a Lasso regression, the algorithm will create a
 model using 11 predictors (and an intercept) for both the 1 SE
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>,
@@ -1076,10 +1076,10 @@ variables, or the time and distance variables):</p>
 <span>  y <span class="op">=</span> <span class="va">training_set_reduced</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">speed_km_h</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/proxy/man/dist.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="va">alpha</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_glm_reduced</span>, xvar <span class="op">=</span> <span class="st">"lambda"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/glmnet-reduced-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/glmnet-reduced-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cv_glm_reduced</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/glmnet-reduced-2.png" width="384" style="display: block; margin: auto;">
+<p><img src="analyses_files/figure-html/glmnet-reduced-2.png" class="r-plt" width="384" style="display: block; margin: auto;">
 We now get a model with 5 (or 3) parameters for minimum (or 1se) lambda,
 i.e. the minimum MSE lambda will use all available predictors (distance,
 inclination, temperature, average heart rate, and days since last
@@ -1237,7 +1237,7 @@ principal component analysis:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">PC</span>, y <span class="op">=</span> <span class="va">percent</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"PC"</span>, y <span class="op">=</span> <span class="st">"Explained Variance"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-scree-plot-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-scree-plot-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>As can be seen from the scree plot, the first two principal
 components explain almost 60% of the total variance in the data, with
 the next five principal components still explaining between 5 and 10
@@ -1247,32 +1247,32 @@ percent each, and each of the last six components explaining less than
 components, we can get a feeling for what the components mean:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-2.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fl">3</span><span class="op">:</span><span class="fl">4</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-3.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-3.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">5</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">6</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-5.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-5.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fl">6</span><span class="op">:</span><span class="fl">7</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-6.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-6.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-7.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-7.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">)</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-8.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-8.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/biplot.html" class="external-link">biplot</a></span><span class="op">(</span><span class="va">pca</span>, choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span>, scale <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/pca-biplot-9.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/pca-biplot-9.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>The two most important components seem to correspond mostly to
 distance/altitude/inclination-related variables (PC1), and to heart
 rate-related variables (PC2), which is not really surprising, seeing how
@@ -1301,7 +1301,7 @@ scale.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clusters_gaussian_mix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mclust-org.github.io/mclust/reference/Mclust.html" class="external-link">Mclust</a></span><span class="op">(</span><span class="va">scaled_tracks</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">clusters_gaussian_mix</span>, what <span class="op">=</span> <span class="st">"classification"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/cluster-gaussian-mix-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/cluster-gaussian-mix-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>Since the plot matrix is somewhat hard to read, let’s plot track
 distance vs speed, colored by clusters:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
@@ -1311,7 +1311,7 @@ distance vs speed, colored by clusters:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Standardized Distance"</span>, y <span class="op">=</span> <span class="st">"Standardized Speed"</span>, color <span class="op">=</span> <span class="st">"Cluster"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Gaussian Mixture Model Clustering"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/cluster-gaussian-mix-plot-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/cluster-gaussian-mix-plot-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>It appears the Gaussian mixture model seems to have clustered the
 data primarily by track length.</p>
 <p>Maybe a different clustering algorithm finds some other classes?
@@ -1326,7 +1326,7 @@ k-nearest-neighbor-distance-plot:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">2.55</span>, col <span class="op">=</span> <span class="st">"blue"</span>,lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">3.25</span>, col <span class="op">=</span> <span class="st">"blue"</span>,lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">4.1</span>, col <span class="op">=</span> <span class="st">"blue"</span>,lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/cluster-dbscan-prep-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/cluster-dbscan-prep-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p><code>k = 1</code> corresponds to a <code>minPts</code> value of 2,
 and the values for the <code>abline</code>s in the plot were tried out.
 The red line (corresponding to a
@@ -1342,7 +1342,7 @@ fourth group for “noise” data points):</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Standardized Distance"</span>, y <span class="op">=</span> <span class="st">"Standardized Speed"</span>, color <span class="op">=</span> <span class="st">"Cluster"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Density-Based Spatial Clustering"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/cluster-dbscan-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/cluster-dbscan-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>Higher density values (i.e. higher values for the <code>eps</code>
 parameter, and higher values for <code>k</code> in the k-NN plot) need
 different <code>eps</code> values, however, during experimenting with
@@ -1376,7 +1376,7 @@ the purple, blue, and green tracks on the following map:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">track</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_color_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"turbo"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-3-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>Selecting the tracks:</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">labeled_tracks</span> <span class="op">&lt;-</span> <span class="va">corrected_tracks</span> <span class="op">|&gt;</span></span>
@@ -1415,7 +1415,7 @@ rate and temperature:</p>
 <span><span class="co">#&gt; Multiple R-squared:  0.4011, Adjusted R-squared:  0.3781 </span></span>
 <span><span class="co">#&gt; F-statistic: 17.41 on 2 and 52 DF,  p-value: 1.627e-06</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_track_1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-5-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-5-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-5-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-5-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-5-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-5-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_track_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">speed_km_h</span> <span class="op">~</span> <span class="va">avg_hr_bpm</span> <span class="op">+</span> <span class="va">temperature_c</span>, data <span class="op">=</span> <span class="va">tracks_2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit_track_2</span><span class="op">)</span></span>
@@ -1439,7 +1439,7 @@ rate and temperature:</p>
 <span><span class="co">#&gt; Multiple R-squared:  0.7946, Adjusted R-squared:  0.7359 </span></span>
 <span><span class="co">#&gt; F-statistic: 13.54 on 2 and 7 DF,  p-value: 0.003928</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_track_2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-6-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-6-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-6-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-6-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-6-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-6-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_track_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">speed_km_h</span> <span class="op">~</span> <span class="va">avg_hr_bpm</span> <span class="op">+</span> <span class="va">temperature_c</span>, data <span class="op">=</span> <span class="va">tracks_4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit_track_4</span><span class="op">)</span></span>
@@ -1463,7 +1463,7 @@ rate and temperature:</p>
 <span><span class="co">#&gt; Multiple R-squared:  0.4682, Adjusted R-squared:  0.4465 </span></span>
 <span><span class="co">#&gt; F-statistic: 21.57 on 2 and 49 DF,  p-value: 1.908e-07</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_track_4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-7-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-7-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-7-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-7-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-7-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-7-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-7-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>For all of the three routes, we see that the temperature has no
 significant effect. Again, we could try to find a training effect during
 the course of the season, however, for the selected tracks we now have
@@ -1473,10 +1473,10 @@ group 4 are almost all in the later part of the season, which is not
 great for modeling:</p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tracks_1</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/month.html" class="external-link">month</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-8-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tracks_4</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/month.html" class="external-link">month</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-8-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-8-2.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>The class 1 tracks only have 3 observations in October, but overall
 the number of available data points for this group looks better, so
 let’s try to create a model for this group:</p>
@@ -1511,7 +1511,7 @@ let’s try to create a model for this group:</p>
 <span><span class="co">#&gt; Multiple R-squared:  0.2322, Adjusted R-squared:  0.1362 </span></span>
 <span><span class="co">#&gt; F-statistic: 2.419 on 6 and 48 DF,  p-value: 0.04008</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit_tracks_1_month</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/unnamed-chunk-9-1.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-9-2.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-9-3.png" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-9-4.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-9-3.png" class="r-plt" width="384" style="display: block; margin: auto;"><img src="analyses_files/figure-html/unnamed-chunk-9-4.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <p>Again, no significant effect can be found. Considering that the model
 using heart rate and temperature explained only 40% of the variance, and
 without an obvious training effect over the course of the season, there
@@ -1546,10 +1546,10 @@ much work in progress.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">latitude</span>, <span class="va">longitude</span><span class="op">)</span></span>
 <span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dtw/man/dtw.html" class="external-link">dtw</a></span><span class="op">(</span><span class="va">t1s</span>, <span class="va">t1f</span>, keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">a</span>, type <span class="op">=</span> <span class="st">"alignment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/dynamic-time-warp-1-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/dynamic-time-warp-1-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">a</span>, type <span class="op">=</span> <span class="st">"density"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/dynamic-time-warp-1-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/dynamic-time-warp-1-2.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#plot(a, type = "two", offset = -200)</span></span></code></pre></div>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
@@ -1564,10 +1564,10 @@ much work in progress.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">latitude</span>, <span class="va">longitude</span><span class="op">)</span></span>
 <span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dtw/man/dtw.html" class="external-link">dtw</a></span><span class="op">(</span><span class="va">t2s</span>, <span class="va">t2f</span>, keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">b</span>, type <span class="op">=</span> <span class="st">"alignment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/dynamic-time-warp-2-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/dynamic-time-warp-2-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">b</span>, type <span class="op">=</span> <span class="st">"density"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/dynamic-time-warp-2-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/dynamic-time-warp-2-2.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#plot(a, type = "two", offset = -200)</span></span></code></pre></div>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
@@ -1582,10 +1582,10 @@ much work in progress.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">latitude</span>, <span class="va">longitude</span><span class="op">)</span></span>
 <span><span class="va">c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dtw/man/dtw.html" class="external-link">dtw</a></span><span class="op">(</span><span class="va">t4s</span>, <span class="va">t4f</span>, keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">c</span>, type <span class="op">=</span> <span class="st">"alignment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/dynamic-time-warp-4-1.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/dynamic-time-warp-4-1.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">c</span>, type <span class="op">=</span> <span class="st">"density"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyses_files/figure-html/dynamic-time-warp-4-2.png" width="384" style="display: block; margin: auto;"></p>
+<p><img src="analyses_files/figure-html/dynamic-time-warp-4-2.png" class="r-plt" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#plot(a, type = "two", offset = -200)</span></span></code></pre></div>
 </div>
@@ -1601,7 +1601,7 @@ much work in progress.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
